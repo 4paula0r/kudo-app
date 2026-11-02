@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "tertiary-fixed": "#ffdad6", "surface-container-low": "#f4f4f0", "text-primary": "#172a3a", "inverse-surface": "#2f312e", "secondary-container": "#9f8eff", "on-tertiary-fixed": "#410003", "surface-dim": "#dbdad6", "error-container": "#ffdad6", "yellow-warning": "#f4c95d", "secondary": "#5f4dba", "dark-bg": "#0f1720", "secondary-fixed-dim": "#c9bfff", "dark-surface": "#172a3a", "inverse-on-surface": "#f2f1ed", "text-muted": "#98a2b3", "tertiary-container": "#590005", "background": "#faf9f5", "surface-container-highest": "#e3e2df", "on-tertiary-container": "#e7685f", "surface-container-high": "#e9e8e4", "outline-variant": "#c3c7cc", "tertiary-fixed-dim": "#ffb3ac", "surface-bright": "#faf9f5", "border-light": "#eaecf0", "on-primary-fixed": "#091d2d", "surface-white": "#ffffff", "on-secondary-fixed-variant": "#4733a1", "on-background": "#1b1c1a", "surface-variant": "#e3e2df", "on-error-container": "#93000a", "mint-success": "#62d2a2", "on-secondary": "#ffffff", "outline": "#74777d", "surface": "#faf9f5", "text-disabled": "#d0d5dd", "secondary-fixed": "#e5deff", "on-primary": "#ffffff", "surface-tint": "#4e6072", "on-error": "#ffffff", "primary": "#021525", "on-tertiary-fixed-variant": "#86211e", "primary-fixed": "#d1e5fa", "primary-container": "#172a3a", "on-tertiary": "#ffffff", "primary-fixed-dim": "#b5c9de", "inverse-primary": "#b5c9de", "error": "#ba1a1a", "on-surface": "#1b1c1a", "on-primary-fixed-variant": "#36495a", "tertiary": "#320002", "text-secondary": "#667085", "on-primary-container": "#7e91a5", "on-secondary-fixed": "#1a0063", "on-surface-variant": "#43474c", "on-secondary-container": "#341d8e", "surface-container-lowest": "#ffffff", "surface-container": "#efeeea" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-2xl": "2rem", "margin-mobile": "1rem", "space-md": "1rem", "gutter": "1rem", "margin": "1.5rem", "gutter-mobile": "0.75rem", "space-xl": "1.5rem", "space-xs": "0.5rem", "space-lg": "1.25rem", "space-sm": "0.75rem", "space-3xl": "3rem", "space-2xs": "0.25rem" }, fontFamily: { "label-md": ["Inter"], "caption-caps": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-lg": ["Inter"], "body-md": ["Inter"], "display-lg": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "body-lg-medium": ["Inter"], "body-md-medium": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "caption": ["Inter"] }, fontSize: { "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "600" }], "caption-caps": ["11px", { lineHeight: "14px", letterSpacing: "0.06em", fontWeight: "700" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "display-lg-mobile": ["26px", { lineHeight: "32px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }], "body-lg-medium": ["16px", { lineHeight: "24px", fontWeight: "500" }], "body-md-medium": ["14px", { lineHeight: "20px", fontWeight: "500" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "caption": ["12px", { lineHeight: "16px", fontWeight: "500" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;background-color:#faf9f5;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:max(env(safe-area-inset-bottom,0px),0.5rem);}.pt-safe{padding-top:max(env(safe-area-inset-top,0px),0px);}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface min-h-screen flex flex-col antialiased selection:bg-secondary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(23,42,58,0.04)] pt-safe"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-xs min-w-0"><img alt="Finova Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UR66tZGp0qDj51rTzzyG3byKtBC5thXccycOHaV8QmI464wFzGJ9z4M0-cVxJ1_cVj51lGwWknrYg2jHrJ0U4WF9ySIG3wG6tCH7gaCljCsnjMj1iBiZwrLqf9ZDSaDPTQmJwnfx8TXFWIrJQcY5XtaMe5G82TjfkyTz6T2-yWUdZ6U7qeuVQkHJmM5j8n0lkuc7iCzoYvZfPLvZAptM0Ri02NttGD-5FDpuppCzFjUezvIoYHwf-KzQb-"/><span class="font-headline-sm text-headline-sm text-text-primary tracking-tight truncate">Presupuestos</span></div><div class="flex items-center gap-space-xs"><button aria-label="Notificaciones" class="relative w-11 h-11 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-secondary ring-2 ring-surface"></span></button><div class="relative flex items-center justify-center w-11 h-11"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtA6uVLf4Yp6q68k5msL5POdNItSxjMlnLHUIrqoaa7ss9ylFmqPZ-wtQGr6K13PAYm3nMl1aJvnGTm5FCEVut_JQOOR4Wevb39ytUWq7dLZ8befiymFISO2opDlXwElFAEllMsCWdbryZlOf7d9JjnE6jKu3XhQ1yn4xzmA_xR-5YUMIlWF9MVNEot_N5Je80Zr0E9Tsp6KsLkcP-2N-MCudPwVkIhOPUDGwgXdK_QKB2KujxwQTK3w"/><span class="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-mint-success ring-2 ring-surface"></span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full">
+<!-- Interactive Floating Sheet Modal (Simulated Action Modal) -->
+<div class="hidden fixed inset-0 z-50 bg-dark-bg/40 backdrop-blur-sm flex items-end justify-center" id="actionModal">
+<div class="w-full max-w-md bg-surface-white rounded-t-3xl p-margin shadow-2xl flex flex-col gap-space-md">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full mx-auto"></div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Ajustar Presupuesto</h3>
+<p class="font-caption text-caption text-text-secondary">Personaliza tus límites mensuales para Marzo</p>
+</div>
+<button class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-text-secondary hover:text-text-primary" id="closeModalBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-caption-caps text-caption-caps text-text-secondary">Categoría</label>
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low text-text-primary">
+<span class="font-body-md-medium text-body-md-medium">Comida &amp; Restaurantes</span>
+<span class="material-symbols-outlined text-text-secondary">fastfood</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-caption-caps text-caption-caps text-text-secondary">Límite Mensual Asignado</label>
+<div class="flex items-center bg-surface-container-low rounded-xl px-space-md py-space-sm">
+<span class="font-headline-sm text-headline-sm text-text-primary mr-2">Q</span>
+<input class="bg-transparent font-headline-sm text-headline-sm text-text-primary w-full outline-none" type="number" value="2200"/>
+</div>
+</div>
+<button class="w-full py-space-sm rounded-xl bg-dark-surface text-surface-white font-body-md-medium text-body-md-medium flex items-center justify-center gap-space-xs shadow-md active:scale-98 transition-transform" id="saveBudgetBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+        Guardar cambios
+      </button>
+</div>
+</div>
+<!-- Main Content Flow -->
+<div class="px-margin-mobile py-space-md flex flex-col gap-space-lg">
+<!-- Header Controls & Month Selector -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-caption-caps text-caption-caps text-text-secondary uppercase">Planificación</span>
+<button class="flex items-center gap-space-2xs text-text-primary hover:text-secondary transition-colors text-left" type="button">
+<span class="font-headline-md text-headline-md">Marzo 2025</span>
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</button>
+</div>
+<!-- Habit Streak Chip -->
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-warning/15 text-text-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-yellow-warning" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-caption text-caption font-semibold">7 días al hilo</span>
+</div>
+</div>
+<!-- Monthly Overall Budget Card -->
+<div class="w-full rounded-2xl bg-surface-white p-space-lg shadow-[0_2px_12px_rgba(23,42,58,0.05)] flex flex-col gap-space-md relative overflow-hidden">
+<!-- Ambient Glow decoration -->
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-secondary-fixed/50 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-0.5">
+<span class="font-caption text-caption text-text-secondary">Presupuesto Mensual Total</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-display-lg-mobile text-display-lg-mobile text-text-primary">Q 5,440</span>
+<span class="font-body-md text-body-md text-text-muted">/ Q 8,000</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-text-primary font-caption text-caption font-semibold">
+          68% consumido
+        </span>
+</div>
+<!-- Main Progress Bar -->
+<div class="flex flex-col gap-1.5">
+<div class="w-full h-3 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-gradient-to-r from-secondary to-mint-success" style="width: 68%;"></div>
+</div>
+<div class="flex justify-between items-center font-caption text-caption">
+<span class="text-mint-success font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+            Buen ritmo (Q 2,560 libre)
+          </span>
+<span class="text-text-muted">11 días restantes</span>
+</div>
+</div>
+<!-- Micro AI Coach Callout -->
+<div class="flex items-center gap-space-xs p-space-sm rounded-xl bg-secondary-fixed/40">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<p class="font-caption text-caption text-text-primary flex-1">
+          Vas <strong>4% por debajo</strong> de tu ritmo proyectado. Si mantienes este ritmo, sumarás Q 480 extra a tus metas.
+        </p>
+</div>
+</div>
+<!-- Category Limits Section -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-text-primary">Límites por Categoría</h2>
+<span class="font-caption text-caption text-text-muted">5 activas</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Category 1: Comida (Alert / Coral) -->
+<div class="w-full p-space-md rounded-xl bg-surface-white shadow-[0_1px_6px_rgba(23,42,58,0.03)] flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-full bg-on-tertiary-container/15 flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Comida &amp; Restaurantes</span>
+<span class="font-caption text-caption text-on-tertiary-container font-medium">84% consumido</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Q 1,850</span>
+<span class="font-caption text-caption text-text-muted">de Q 2,200</span>
+</div>
+</div>
+<!-- Bar -->
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden mt-1">
+<div class="h-full rounded-full bg-on-tertiary-container" style="width: 84%;"></div>
+</div>
+<!-- Smart Warning Banner -->
+<div class="flex items-center justify-between pt-1 font-caption text-caption">
+<span class="text-on-tertiary-container flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[15px]">info</span>
+              Te quedan Q 350 para 11 días
+            </span>
+<span class="text-text-muted">~Q 31 / día</span>
+</div>
+</div>
+<!-- Category 2: Hogar & Servicios (Warning / Mustard) -->
+<div class="w-full p-space-md rounded-xl bg-surface-white shadow-[0_1px_6px_rgba(23,42,58,0.03)] flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-full bg-yellow-warning/20 flex items-center justify-center text-text-primary">
+<span class="material-symbols-outlined text-[20px]">home</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Hogar &amp; Servicios</span>
+<span class="font-caption text-caption text-text-secondary">80% consumido</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Q 1,200</span>
+<span class="font-caption text-caption text-text-muted">de Q 1,500</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden mt-1">
+<div class="h-full rounded-full bg-yellow-warning" style="width: 80%;"></div>
+</div>
+<div class="flex justify-between items-center pt-1 font-caption text-caption text-text-muted">
+<span>Margen restante: Q 300</span>
+<span>Facturas al día</span>
+</div>
+</div>
+<!-- Category 3: Transporte (Deep Navy) -->
+<div class="w-full p-space-md rounded-xl bg-surface-white shadow-[0_1px_6px_rgba(23,42,58,0.03)] flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-dark-surface">
+<span class="material-symbols-outlined text-[20px]">directions_car</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Transporte</span>
+<span class="font-caption text-caption text-text-secondary">62% consumido</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Q 620</span>
+<span class="font-caption text-caption text-text-muted">de Q 1,000</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden mt-1">
+<div class="h-full rounded-full bg-dark-surface" style="width: 62%;"></div>
+</div>
+<div class="flex justify-between items-center pt-1 font-caption text-caption text-text-muted">
+<span>Q 380 disponible</span>
+<span>Estable</span>
+</div>
+</div>
+<!-- Category 4: Compras Personales (Mint Success) -->
+<div class="w-full p-space-md rounded-xl bg-surface-white shadow-[0_1px_6px_rgba(23,42,58,0.03)] flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-full bg-mint-success/20 flex items-center justify-center text-dark-surface">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Compras personales</span>
+<span class="font-caption text-caption text-text-secondary">58% consumido</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Q 580</span>
+<span class="font-caption text-caption text-text-muted">de Q 1,000</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden mt-1">
+<div class="h-full rounded-full bg-mint-success" style="width: 58%;"></div>
+</div>
+<div class="flex justify-between items-center pt-1 font-caption text-caption text-text-muted">
+<span>Q 420 disponible</span>
+<span>Buen control</span>
+</div>
+</div>
+<!-- Category 5: Entretenimiento (Lavender) -->
+<div class="w-full p-space-md rounded-xl bg-surface-white shadow-[0_1px_6px_rgba(23,42,58,0.03)] flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">sports_esports</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Entretenimiento</span>
+<span class="font-caption text-caption text-secondary font-medium">56% consumido</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Q 450</span>
+<span class="font-caption text-caption text-text-muted">de Q 800</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden mt-1">
+<div class="h-full rounded-full bg-secondary-container" style="width: 56%;"></div>
+</div>
+<div class="flex justify-between items-center pt-1 font-caption text-caption text-text-muted">
+<span>Q 350 disponible</span>
+<span>Dentro del plan</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Motivational Goal Card: Viaje a Cancún -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-text-primary">Ahorro Activo Vinculado</h2>
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<div class="w-full rounded-2xl bg-surface-white p-space-md shadow-[0_2px_12px_rgba(23,42,58,0.04)] flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex gap-space-sm items-start">
+<div class="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Turquoise crystal clear Caribbean ocean waves gently splashing on warm sunlit white sand beach in Cancun Mexico with soft warm natural ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcD9LJP6sPrf7Dti-su4URxf6U-AuKvEtDdb9z9Ua5ZFrhCklfHcpX36bcyVX9T29NNSCCvYRNlkkr3jbA7aFZ4LPvn5KhO3l9QZzTZ8C-pqum9to0ll8LPcGJ2dMONMoQN9zeIDeIfcaQsGDD4P9u7i-ElfytlCY7io6dRWvTnmRzHf2vDKbPYOrSEe5b3PM_i_5ThUyr_SNBtaql5j7iM21UBGExvI903Wl6g8hVEaEN4cdVSdZDuw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-dark-surface/40 to-transparent"></div>
+<span class="absolute bottom-1 left-1.5 text-surface-white font-caption-caps text-caption-caps">71%</span>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-between h-20 py-0.5">
+<div>
+<div class="flex items-center gap-1">
+<span class="text-[16px]">✈️</span>
+<h3 class="font-headline-sm text-headline-sm text-text-primary truncate">Viaje a Cancún</h3>
+</div>
+<p class="font-caption text-caption text-text-secondary">Faltan solo Q 1,750 para tu meta</p>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md-medium text-body-md-medium text-text-primary">Q 4,250 <span class="font-caption text-caption text-text-muted">/ Q 6,000</span></span>
+<button class="px-3 py-1 rounded-lg bg-mint-success/20 text-dark-surface font-caption text-caption font-semibold flex items-center gap-1 active:scale-95 transition-transform" id="contributeBtn" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span>
+                Aportar
+              </button>
+</div>
+</div>
+</div>
+<!-- Savings Progress Track -->
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-mint-success" style="width: 71%;"></div>
+</div>
+</div>
+</div>
+<!-- Bottom Actions Trigger -->
+<div class="pt-space-xs flex flex-col gap-space-xs">
+<button class="w-full py-space-sm rounded-xl bg-dark-surface text-surface-white font-body-md-medium text-body-md-medium flex items-center justify-center gap-space-xs shadow-[0_4px_16px_rgba(23,42,58,0.18)] active:scale-98 transition-transform" id="openAdjustBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+        Ajustar presupuestos o crear nuevo límite
+      </button>
+<p class="text-center font-caption text-caption text-text-muted">
+        Las alertas automáticas te avisarán al alcanzar el 85% de cualquier categoría.
+      </p>
+</div>
+</div>
+<!-- Interactive Script for micro-delight -->
+<script>
+    (function() {
+      const openBtn = document.getElementById('openAdjustBtn');
+      const closeBtn = document.getElementById('closeModalBtn');
+      const modal = document.getElementById('actionModal');
+      const saveBtn = document.getElementById('saveBudgetBtn');
+      const contributeBtn = document.getElementById('contributeBtn');
+
+      if (openBtn && modal) {
+        openBtn.addEventListener('click', () => {
+          modal.classList.remove('hidden');
+        });
+      }
+
+      if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+        });
+      }
+
+      if (saveBtn && modal) {
+        saveBtn.addEventListener('click', () => {
+          saveBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span> ¡Guardado!';
+          setTimeout(() => {
+            modal.classList.add('hidden');
+            saveBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span> Guardar cambios';
+          }, 600);
+        });
+      }
+
+      if (contributeBtn) {
+        contributeBtn.addEventListener('click', () => {
+          contributeBtn.innerHTML = '✨ ¡+Q50 aportados!';
+          contributeBtn.classList.add('bg-mint-success');
+          setTimeout(() => {
+            contributeBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">add</span> Aportar';
+            contributeBtn.classList.remove('bg-mint-success');
+          }, 1400);
+        });
+      }
+    })();
+  </script>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface-white/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(23,42,58,0.05)]" data-active-classes="text-text-primary font-semibold"><div class="flex justify-between items-center h-16 px-margin-mobile relative"><a class="flex-1 min-w-0 flex flex-col items-center justify-center h-full text-text-muted hover:text-text-primary transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-caption text-caption tracking-tight truncate mt-0.5">Inicio</span></a><a aria-current="page" class="flex-1 min-w-0 flex flex-col items-center justify-center h-full transition-all text-text-primary font-semibold" data-path="presupuestos" href="#"><span class="material-symbols-outlined text-[24px]">account_balance_wallet</span><span class="font-caption text-caption tracking-tight truncate mt-0.5">Finanzas</span></a><div class="flex-1 flex items-center justify-center"><a aria-label="Añadir transacción" class="flex items-center justify-center w-12 h-12 -mt-5 rounded-full bg-dark-surface text-surface-white shadow-[0_8px_20px_rgba(23,42,58,0.28)] hover:bg-primary transition-transform active:scale-95" data-path="anadir-transaccion" href="#"><span class="material-symbols-outlined text-[26px]">add</span></a></div><a class="flex-1 min-w-0 flex flex-col items-center justify-center h-full text-text-muted hover:text-text-primary transition-all" data-path="metas-de-ahorro" href="#"><span class="material-symbols-outlined text-[24px]">savings</span><span class="font-caption text-caption tracking-tight truncate mt-0.5">Metas</span></a><a class="flex-1 min-w-0 flex flex-col items-center justify-center h-full text-text-muted hover:text-text-primary transition-all" data-path="finova-ai" href="#"><span class="material-symbols-outlined text-[24px]">auto_awesome</span><span class="font-caption text-caption tracking-tight truncate mt-0.5">Finova AI</span></a></div></nav></body></html>

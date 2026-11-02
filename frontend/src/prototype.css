@@ -1,0 +1,7 @@
+.prototype-frame {
+  display: block;
+  width: 100%;
+  min-height: 720px;
+  border: 0;
+  background: #faf9f5;
+}
