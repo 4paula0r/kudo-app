@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: kudo_local
       POSTGRES_DB: kudo
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - kudo_data:/var/lib/postgresql/data
 volumes:

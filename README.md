@@ -4,6 +4,8 @@ Aplicación de finanzas personales en español, con React + TypeScript, API Expr
 
 La documentación del **Entregable 1** (problema, requerimientos, modelo de datos, arquitectura, vistas y revisión del documento fuente) está en [`docs/entregable-1/`](docs/entregable-1/README.md).
 
+Las páginas HTML originales de Login, Dashboard, Transacciones y Presupuestos están en `frontend/public/prototypes/`; sus copias originales están en `docs/referencia/html-prototipos/`. React las abre en las rutas principales para conservar tu trabajo. El login y el registro, así como el guardado de transacciones y la lista reciente, usan la API; las opciones Face ID/Google/Apple y los presupuestos todavía son prototipos. Las páginas usan Tailwind y fuentes por CDN, así que necesitan internet para cargar su apariencia completa.
+
 ## Requisitos
 
 - Node.js 20 o superior y npm
