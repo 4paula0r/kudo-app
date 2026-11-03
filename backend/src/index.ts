@@ -5,11 +5,13 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { createHash, randomBytes } from 'node:crypto'
 import { Prisma, PrismaClient, TxType } from '@prisma/client'
 import { z } from 'zod'
 
 const app = express()
 const db = new PrismaClient()
+const passwordResetTokens = new Map<string, { userId: string; expiresAt: number }>()
 const port = Number(process.env.PORT || 4000)
 const secret = process.env.JWT_SECRET
 
@@ -48,6 +50,8 @@ const credentials = z.object({
   email: z.string().trim().email().max(200),
   password: z.string().min(8, 'La contraseña debe contener mínimo 8 caracteres.').max(100),
 })
+const resetRequest = z.object({ email: z.string().trim().email().max(200) })
+const resetPasswordInput = z.object({ token: z.string().min(32).max(200), password: z.string().min(8, 'La contraseña debe contener mínimo 8 caracteres.').max(100) })
 const transactionSchema = z.object({
   title: z.string().trim().min(1).max(100),
   category: z.string().trim().min(1).max(40),
@@ -94,6 +98,41 @@ app.post('/api/auth/login', route(async (req, res) => {
   const user = await db.user.findUnique({ where: { email: d.email.toLowerCase() } })
   if (!user || !await bcrypt.compare(d.password, user.passwordHash)) return res.status(401).json({ message: 'Correo o contraseña incorrectos.' })
   return res.json({ token: jwt.sign({}, secret!, { subject: user.id, expiresIn: '7d' }), user: { id: user.id, name: user.name, email: user.email, age: user.age, currency: user.currency, expenseCategories: user.expenseCategories } })
+}))
+
+app.post('/api/auth/forgot-password', route(async (req, res) => {
+  const { email } = resetRequest.parse(req.body)
+  const genericMessage = 'Si existe una cuenta con ese correo, se preparó un enlace para restablecer la contraseña.'
+  if (process.env.NODE_ENV === 'production') return res.status(503).json({ message: 'La recuperación por correo aún no está configurada. Contacta al administrador de KUDO.' })
+
+  const user = await db.user.findUnique({ where: { email: email.toLowerCase() }, select: { id: true } })
+  if (!user) return res.json({ message: genericMessage })
+
+  const rawToken = randomBytes(32).toString('base64url')
+  const tokenHash = createHash('sha256').update(rawToken).digest('hex')
+  for (const [existingHash, entry] of passwordResetTokens) {
+    if (entry.userId === user.id || entry.expiresAt <= Date.now()) passwordResetTokens.delete(existingHash)
+  }
+  passwordResetTokens.set(tokenHash, { userId: user.id, expiresAt: Date.now() + 15 * 60 * 1000 })
+  const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+  const resetUrl = `${clientOrigin}/reset-password?token=${encodeURIComponent(rawToken)}`
+  return res.json({ message: genericMessage, resetUrl })
+}))
+
+app.post('/api/auth/reset-password', route(async (req, res) => {
+  const { token, password } = resetPasswordInput.parse(req.body)
+  const tokenHash = createHash('sha256').update(token).digest('hex')
+  const reset = passwordResetTokens.get(tokenHash)
+  if (!reset || reset.expiresAt <= Date.now()) {
+    passwordResetTokens.delete(tokenHash)
+    return res.status(400).json({ message: 'El enlace venció o ya se utilizó. Solicita uno nuevo.' })
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12)
+  passwordResetTokens.delete(tokenHash)
+  for (const [existingHash, entry] of passwordResetTokens) if (entry.userId === reset.userId) passwordResetTokens.delete(existingHash)
+  await db.user.update({ where: { id: reset.userId }, data: { passwordHash } })
+  return res.json({ message: 'Tu contraseña se actualizó. Ya puedes iniciar sesión.' })
 }))
 
 app.get('/api/auth/me', auth, route(async (req, res) => {

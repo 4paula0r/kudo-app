@@ -78,6 +78,7 @@ function App(){
 
   return <Routes>
     <Route path="/login" element={<LoginPage onLogin={profile=>{setUser(profile);setLogged(true)}}/>}/>
+    <Route path="/reset-password" element={<LoginPage onLogin={profile=>{setUser(profile);setLogged(true)}}/>}/>
     <Route path="/*" element={logged?<div className={`shell ${menu?'menu-open':''}`}>
       <aside className={`sidebar ${menu?'open':''}`}>
         <div className="brand"><div className="brand-mark">k</div><span>KUDO<small>FINANZAS PERSONALES</small></span><button className="close-menu" onClick={()=>setMenu(false)}><X/></button></div>
