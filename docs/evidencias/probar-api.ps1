@@ -4,6 +4,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$apiUri = [Uri]$ApiBaseUrl
+if ($apiUri.Host -notin @('localhost', '127.0.0.1') -or $apiUri.Port -ne 4002) {
+    throw 'Por seguridad, esta evidencia solo admite una instancia local de pruebas en el puerto 4002.'
+}
 $ApiRoot = $ApiBaseUrl.TrimEnd('/') + '/api'
 $RunId = [Guid]::NewGuid().ToString('N').Substring(0, 12)
 $TestEmail = "evidencia-$RunId@kudo.local"
@@ -90,7 +94,7 @@ function Invoke-KudoRequest {
 }
 
 # Inicia el backend de prueba en PORT=4002 con DATABASE_URL apuntando solo a kudo_test.
-# No ejecutes este script contra cuentas ni bases de datos de usuarios reales.
+# Cada ejecución crea una cuenta y registros únicos en esa base de pruebas.
 $null = Invoke-KudoRequest -Name 'GET /api/health' -Method 'GET' -Path '/health' -ExpectedStatus 200
 if (-not $Results[0].passed) { throw 'El backend no respondió correctamente en /api/health.' }
 
