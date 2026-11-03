@@ -193,4 +193,4 @@ La ruta de salud también se comprobó en el puerto configurado `4000`: `GET htt
 
 ## Resultado
 
-**10 de 10 endpoints aprobados** en la instancia temporal conectada a `kudo_test`. La respuesta de presupuesto también confirmó el cálculo real: Q 1.25 gastados de Q 100.00, 1% utilizado y Q 98.75 restantes. Los registros se crearon con el identificador de corrida `b91652a82aef` y no pertenecen a cuentas reales.
+**10 de 10 endpoints aprobados** en la instancia temporal conectada a `kudo_test`. La respuesta de presupuesto también confirmó el cálculo real: Q 1.25 gastados de Q 100.00, 1% utilizado y Q 98.75 restantes. Los registros se crearon con el identificador de corrida `b91652a82aef` y no pertenecen a cuentas reales. Después de guardar las respuestas, retiré de `kudo_test` las tres cuentas y sus datos de prueba creados durante las ejecuciones de validación; no se borró ni modificó ninguna cuenta previa.
