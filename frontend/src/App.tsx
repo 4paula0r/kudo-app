@@ -1,4 +1,4 @@
-import React,{useEffect,useState,FormEvent} from 'react'
+import React,{useEffect,useRef,useState,FormEvent} from 'react'
 import {NavLink,Routes,Route,Navigate,useLocation,useNavigate} from 'react-router-dom'
 import {Home,ChartNoAxesCombined,Plus,Target,Sparkles,Bell,ArrowUpRight,ArrowDownRight,Utensils,Car,ShoppingBag,House,Heart,Plane,MoreHorizontal,Wallet,CalendarDays,Paperclip,LogOut,Menu,X,TrendingUp,Pencil,CircleHelp} from 'lucide-react'
 import {request,token} from './api'
@@ -33,6 +33,8 @@ function App(){
   const [goals,setGoals]=useState<Goal[]>([])
   const [menu,setMenu]=useState(false)
   const [tourIndex,setTourIndex]=useState<number|null>(null)
+  const [headerMenu,setHeaderMenu]=useState<'profile'|'notifications'|null>(null)
+  const topActionsRef=useRef<HTMLDivElement>(null)
 
   useEffect(()=>{
     if(logged&&!localStorage.getItem('kudo-tour-seen')){
@@ -56,6 +58,16 @@ function App(){
     return()=>{window.removeEventListener('storage',syncProfile);window.removeEventListener('message',onAuthMessage)}
   },[])
 
+  useEffect(()=>{
+    const closeOutside=(event:PointerEvent)=>{if(event.target instanceof Node&&!topActionsRef.current?.contains(event.target))setHeaderMenu(null)}
+    const closeEscape=(event:KeyboardEvent)=>{if(event.key==='Escape')setHeaderMenu(null)}
+    document.addEventListener('pointerdown',closeOutside)
+    document.addEventListener('keydown',closeEscape)
+    return()=>{document.removeEventListener('pointerdown',closeOutside);document.removeEventListener('keydown',closeEscape)}
+  },[])
+
+  useEffect(()=>setHeaderMenu(null),[location.pathname])
+
   const addTx=async(item:Omit<Tx,'id'>)=>{const d=await request<{transaction:Tx}>('/transactions',{method:'POST',body:JSON.stringify(item)});setTx(v=>[d.transaction,...v])}
   const updateTx=async(id:string,item:Partial<Omit<Tx,'id'>>)=>{const d=await request<{transaction:Tx}>(`/transactions/${id}`,{method:'PATCH',body:JSON.stringify(item)});setTx(v=>v.map(t=>t.id===id?d.transaction:t));return d.transaction}
   const addGoal=async(name:string,target:number)=>{const d=await request<{goal:Goal}>('/goals',{method:'POST',body:JSON.stringify({name,target,deadline:new Date(Date.now()+180*864e5).toISOString()})});setGoals(v=>[d.goal,...v])}
@@ -78,7 +90,17 @@ function App(){
         </div>
       </aside>
       {menu&&<button className="scrim" onClick={()=>setMenu(false)}/>}
-      <main className="main"><header className="topbar"><button className="mobile-menu" onClick={()=>setMenu(true)}><Menu/></button><div className="crumb">Mi espacio <span>/</span> <b>{location.pathname==='/cuenta'?'Mi cuenta':nav.find(n=>n[0]===location.pathname)?.[1]||'Inicio'}</b></div><div className="top-actions"><button className="icon-btn tour-launch" onClick={startTour} aria-label="Iniciar recorrido por KUDO" title="Recorrido por KUDO"><CircleHelp size={19}/></button><button className="icon-btn notification" aria-label="Notificaciones"><Bell size={19}/><i/></button><NavLink to="/cuenta" className="profile-mini account-link" aria-label="Abrir mi cuenta"><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>Mi cuenta</small></span></NavLink></div></header>
+      <main className="main"><header className="topbar"><button className="mobile-menu" onClick={()=>setMenu(true)}><Menu/></button><div className="crumb">Mi espacio <span>/</span> <b>{location.pathname==='/cuenta'?'Mi cuenta':nav.find(n=>n[0]===location.pathname)?.[1]||'Inicio'}</b></div><div className="top-actions" ref={topActionsRef}>
+        <button className="icon-btn tour-launch" onClick={startTour} aria-label="Iniciar recorrido por KUDO" title="Recorrido por KUDO"><CircleHelp size={19}/></button>
+        <div className="header-action"><button type="button" className="icon-btn notification" aria-label="Notificaciones" aria-expanded={headerMenu==='notifications'} aria-controls="notifications-popover" onClick={()=>setHeaderMenu(current=>current==='notifications'?null:'notifications')}><Bell size={19}/><i/></button>
+          {headerMenu==='notifications'&&<section className="header-popover notifications-popover" id="notifications-popover" role="dialog" aria-label="Notificaciones"><div className="popover-heading"><div><b>Notificaciones</b><small>Actividad de tu cuenta</small></div><button type="button" aria-label="Cerrar notificaciones" onClick={()=>setHeaderMenu(null)}><X size={16}/></button></div>
+            {tx.length? <><div className="notification-items">{tx.slice(0,3).map(item=><div className="notification-item" key={item.id}><span className={`notification-mark ${item.type==='INCOME'?'income':''}`}>{item.type==='INCOME'?<ArrowDownRight size={15}/>:<ArrowUpRight size={15}/>}</span><span><b>{item.title}</b><small>{item.category} · {new Date(item.date).toLocaleDateString('es-GT',{day:'numeric',month:'short'})}</small></span><strong className={item.type==='INCOME'?'green':'amount'}>{item.type==='INCOME'?'+':'−'}{money(item.amount)}</strong></div>)}</div><NavLink className="popover-link" to="/movimientos" onClick={()=>setHeaderMenu(null)}>Ver movimientos</NavLink></>:<div className="popover-empty"><Bell size={20}/><b>Aún no hay actividad</b><span>Cuando registres un movimiento, aparecerá aquí.</span><NavLink to="/transaccion" onClick={()=>setHeaderMenu(null)}>Registrar movimiento</NavLink></div>}
+          </section>}
+        </div>
+        <div className="header-action"><button type="button" className="profile-mini account-link" aria-label="Abrir menú de perfil" aria-expanded={headerMenu==='profile'} aria-controls="profile-popover" onClick={()=>setHeaderMenu(current=>current==='profile'?null:'profile')}><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>Mi cuenta</small></span></button>
+          {headerMenu==='profile'&&<section className="header-popover profile-popover" id="profile-popover" role="menu" aria-label="Menú de perfil"><div className="profile-popover-user"><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>{user?.email||'Cuenta personal'}</small></span></div><NavLink role="menuitem" to="/cuenta" onClick={()=>setHeaderMenu(null)}><Wallet size={17}/>Mi cuenta</NavLink><button role="menuitem" type="button" onClick={()=>{setHeaderMenu(null);localStorage.removeItem('kudo-token');localStorage.removeItem('kudo-user');localStorage.removeItem('kudo-currency');setUser(null);setLogged(false)}}><LogOut size={17}/>Cerrar sesión</button></section>}
+        </div>
+      </div></header>
         <div className="content"><Routes>
           <Route path="/" element={<DashboardPage transactions={tx} goals={goals} name={user?.name||'ahí'} currencyCode={user?.currency||currencyCode()}/>}/>
           <Route path="/finanzas" element={<FinancePage transactions={tx} currencyCode={user?.currency||currencyCode()}/>}/>
