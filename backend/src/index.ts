@@ -103,7 +103,7 @@ app.post('/api/auth/login', route(async (req, res) => {
 app.post('/api/auth/forgot-password', route(async (req, res) => {
   const { email } = resetRequest.parse(req.body)
   const genericMessage = 'Si existe una cuenta con ese correo, se preparó un enlace para restablecer la contraseña.'
-  if (process.env.NODE_ENV === 'production') return res.status(503).json({ message: 'La recuperación por correo aún no está configurada. Contacta al administrador de KUDO.' })
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_DEV_PASSWORD_RESET !== 'true') return res.status(503).json({ message: 'La recuperación por correo aún no está configurada. Contacta al administrador de KUDO.' })
 
   const user = await db.user.findUnique({ where: { email: email.toLowerCase() }, select: { id: true } })
   if (!user) return res.json({ message: genericMessage })

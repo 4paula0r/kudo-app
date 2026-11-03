@@ -23,6 +23,7 @@ export default function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => vo
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [recovery, setRecovery] = useState<'none' | 'forgot' | 'reset'>('none')
+  const [screen, setScreen] = useState<'welcome' | 'form'>('welcome')
   const [recoveryNotice, setRecoveryNotice] = useState('')
   const [resetUrl, setResetUrl] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -30,12 +31,12 @@ export default function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => vo
 
   useEffect(() => {
     if (location.pathname === '/reset-password') {
-      setMode('login'); setRecovery(new URLSearchParams(location.search).has('token') ? 'reset' : 'forgot')
+      setMode('login'); setScreen('form'); setRecovery(new URLSearchParams(location.search).has('token') ? 'reset' : 'forgot')
       setError(''); setRecoveryNotice(''); setResetUrl('')
     } else setRecovery('none')
   }, [location.pathname, location.search])
 
-  const changeMode = (value: 'login' | 'register') => { setMode(value); setStep(0); setRecovery('none'); setError(''); setRecoveryNotice(''); setResetUrl('') }
+  const changeMode = (value: 'login' | 'register') => { setMode(value); setScreen('form'); setStep(0); setRecovery('none'); setError(''); setRecoveryNotice(''); setResetUrl('') }
   const toggleCategory = (value: string) => setSelected(current => current.includes(value) ? current.filter(item => item !== value) : [...current, value])
   const goNext = () => {
     setError('')
@@ -88,7 +89,16 @@ export default function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => vo
     finally { setBusy(false) }
   }
 
+  if (screen === 'welcome' && recovery === 'none') return <main className="auth-welcome-page"><section className="auth-welcome" aria-labelledby="welcome-title">
+    <div className="welcome-brand"><span className="welcome-brand-mark">k</span><b>KUDO</b></div>
+    <div className="welcome-mascot" aria-hidden="true"><Sparkles size={30}/><i/><i/></div>
+    <div className="welcome-visual" aria-hidden="true"><div className="welcome-card"><div className="welcome-card-head"><span className="welcome-chip"><i/><i/><i/><i/></span><b>KUDO<span>•</span></b></div><div className="welcome-card-mark">k<span>.</span></div><div className="welcome-card-foot"><span>FINANZAS PERSONALES</span><small>CONTROL · CLARIDAD · CALMA</small></div></div><div className="welcome-card-shadow"/></div>
+    <div className="welcome-copy"><h1 id="welcome-title">TUS FINANZAS,<br/><strong>EN TIEMPO REAL.</strong></h1><p>Registra tus gastos, organiza tu dinero y revisa tus movimientos en un solo lugar.</p></div>
+    <div className="welcome-actions"><button type="button" className="welcome-create" onClick={()=>changeMode('register')}>Crear cuenta <ArrowRight size={17}/></button><button type="button" className="welcome-login" onClick={()=>changeMode('login')}>Ya tengo una cuenta</button></div>
+  </section></main>
+
   return <main className="auth-page"><div className="auth-shell">
+    <button type="button" className="auth-return" onClick={()=>{setScreen('welcome');setRecovery('none');setError('');setRecoveryNotice('');setResetUrl('')}}><ArrowLeft size={15}/> Volver</button>
     <header className="auth-brand"><div className="auth-logo"><span>k</span><b/></div><h1>KUDO APP</h1><p>Registra tus gastos y entiende mejor tu dinero.</p></header>
     <section className="auth-card"><div className="auth-tabs"><button type="button" className={mode === 'login' ? 'selected' : ''} onClick={() => changeMode('login')}>Ingresar</button><button type="button" className={mode === 'register' ? 'selected' : ''} onClick={() => changeMode('register')}>Crear cuenta</button></div>
       {mode === 'register' && <div className="auth-progress" aria-label={`Paso ${step + 1} de 5`}><i style={{ width: `${(step + 1) * 20}%` }}/></div>}
