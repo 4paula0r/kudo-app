@@ -2,11 +2,15 @@
 .live-dashboard-simple{width:min(760px,100%)}
 .live-dashboard-simple .live-dashboard-heading{margin-bottom:16px}
 .live-dashboard-simple .live-dashboard-heading h1{margin:0;font-size:25px}
-.live-balance-simple{min-height:148px;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:24px 28px}
-.live-balance-simple>span{display:flex;align-items:center;gap:8px;color:#d5dbe2;font-size:12px}
-.live-balance-simple>b{font-size:34px;line-height:1.1;margin:0}
+.live-balance-simple{min-height:190px;position:relative;display:block;overflow:hidden;padding:22px 23px}
+.live-balance-simple .balance-top,.live-balance-simple>b,.live-balance-simple .balance-foot{position:relative;z-index:1}
+.live-balance-simple .balance-top{color:#e3dcfa;font-size:9px;letter-spacing:.15em}
+.live-balance-simple>b{display:block;font:700 30px Manrope,sans-serif;margin:25px 0 24px;letter-spacing:-.04em}
+.live-balance-simple .balance-foot{justify-content:flex-start;font-size:9px;color:#e5def8}
+.live-balance-simple .balance-pattern{position:absolute;width:190px;height:190px;border:1px solid #ffffff1b;border-radius:50%;right:-66px;bottom:-112px;box-shadow:0 0 0 20px #ffffff0c,0 0 0 42px #ffffff08}
 .live-recent-simple{margin-top:16px}
 .ai-layout-single{grid-template-columns:minmax(0,1fr)}
+.ai-layout-single .chat-panel{min-height:540px}
 .tour-launch{color:#7254c5}
 .tour-backdrop{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:18px;background:#17142678;backdrop-filter:blur(3px)}
 .tour-card{width:min(420px,100%);padding:23px;border:1px solid #eee9f5;border-radius:18px;background:#fff;box-shadow:0 22px 70px #19132d40}
@@ -16,6 +20,9 @@
 .tour-symbol{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#f0ebfd;color:#7555d9}
 .tour-card h2{margin:14px 0 7px;font:700 21px Manrope;color:#302c43}.tour-card>p{min-height:42px;margin:0;color:#777183;font-size:12px;line-height:1.6}
 .tour-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:23px}.tour-actions>div{display:flex;gap:8px}.tour-actions button{min-height:37px;padding:0 13px;border-radius:9px;font-size:10px;font-weight:600}.tour-skip,.tour-back{border:1px solid #e8e4ef;background:#fff;color:#777183}.tour-next{border:0;background:#7555d9;color:white}.tour-back:disabled{opacity:.45;cursor:default}
+@media(max-width:520px){.live-dashboard-simple .live-dashboard-heading h1{font-size:22px}.live-balance-simple{min-height:165px;padding:17px}.live-balance-simple>b{font-size:26px;margin:20px 0}.ai-layout-single .chat-panel{min-height:440px}.tour-card{padding:18px}.tour-actions button{padding:0 9px;font-size:9px}}
+.live-balance-simple>b{font:700 30px Manrope,sans-serif;margin:25px 0 24px;letter-spacing:-.04em}
+@media(max-width:520px){.live-balance-simple>b{font-size:26px;margin:20px 0}}
 .live-dashboard-heading,.finance-page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}
 .live-dashboard-heading h1,.finance-page-heading h1{font:700 27px Manrope,sans-serif;letter-spacing:-.04em;color:#302c43;margin:7px 0 5px}
 .live-dashboard-heading p,.finance-page-heading p{margin:0;color:#928da0;font-size:12px}

@@ -16,8 +16,10 @@ export default function DashboardPage({ transactions, name, currencyCode }: { tr
   return <div className="live-dashboard live-dashboard-simple">
     <header className="live-dashboard-heading"><div><h1>Hola, {firstName} 👋</h1></div></header>
     <section className="live-balance-card live-balance-simple" aria-label="Balance actual">
-      <span><Wallet size={16}/> Balance de tu cuenta</span>
+      <div className="balance-top"><span>DINERO DISPONIBLE</span><span className="balance-icon"><Wallet size={19}/></span></div>
       <b>{currency(balance, currencyCode)}</b>
+      <div className="balance-foot"><span><i/>Balance según tus movimientos</span></div>
+      <div className="balance-pattern"/>
     </section>
     <section className="panel live-recent-card live-recent-simple">
       <div className="panel-heading"><div><h2>Movimientos recientes</h2></div><NavLink to="/movimientos" className="text-link">Ver todos</NavLink></div>

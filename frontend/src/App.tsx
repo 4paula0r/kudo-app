@@ -1,11 +1,12 @@
 import React,{useEffect,useState,FormEvent} from 'react'
 import {NavLink,Routes,Route,Navigate,useLocation,useNavigate} from 'react-router-dom'
-import {Home,ChartNoAxesCombined,Plus,Target,Sparkles,Bell,ArrowUpRight,ArrowDownRight,Utensils,Car,ShoppingBag,House,Heart,Plane,MoreHorizontal,Wallet,CalendarDays,Paperclip,Send,LogOut,Menu,X,TrendingUp,Pencil,CircleHelp} from 'lucide-react'
+import {Home,ChartNoAxesCombined,Plus,Target,Sparkles,Bell,ArrowUpRight,ArrowDownRight,Utensils,Car,ShoppingBag,House,Heart,Plane,MoreHorizontal,Wallet,CalendarDays,Paperclip,LogOut,Menu,X,TrendingUp,Pencil,CircleHelp} from 'lucide-react'
 import {request,token} from './api'
 import Account from './Account'
 import LoginPage from './LoginPage'
 import DashboardPage from './DashboardPage'
 import FinancePage from './FinancePage'
+import KudoAI from './KudoAI'
 
 type Tx={id:string,title:string,category:string,type:'INCOME'|'EXPENSE',amount:number,date:string,paymentMethod?:string}
 type Goal={id:string,name:string,target:number,saved:number,deadline:string}
@@ -85,7 +86,7 @@ function App(){
           <Route path="/movimientos" element={<Finances tx={tx} updateTx={updateTx}/>}/>
           <Route path="/metas" element={<Goals goals={goals} addGoal={addGoal} contribute={id=>contribute(id,100)}/>}/>
           <Route path="/cuenta" element={<Account user={user} onSave={async(profile)=>{const d=await request<{user:Profile}>('/auth/me',{method:'PATCH',body:JSON.stringify(profile)});setUser(d.user);localStorage.setItem('kudo-user',JSON.stringify(d.user));return d.user}}/>}/>
-          <Route path="/kudo-ai" element={<KudoAI tx={tx} name={user?.name?.trim().split(/\s+/)[0]||'ahí'}/>}/>
+          <Route path="/kudo-ai" element={<KudoAI tx={tx} name={user?.name?.trim().split(/\s+/)[0]||'ahí'} currencyCode={user?.currency||currencyCode()}/>}/>
         </Routes></div><footer>Una plataforma para ayudarte a registrar tus gastos</footer>
       </main>
       <NavLink to="/transaccion" className="global-fab" aria-label="Registrar nuevo movimiento" title="Registrar nuevo movimiento"><Plus size={21}/><span>Nuevo movimiento</span></NavLink>
@@ -235,36 +236,6 @@ function NewTransaction({addTx}:{addTx:(t:Omit<Tx,'id'>)=>Promise<void>}){
       <button className="contribute" disabled={busy||progress>=100} onClick={()=>addContribution(g.id)}><Plus size={15}/> Agregar Q 100</button>
     </article>})}</div>:<section className="goal-empty"><div className="goal-empty-icon"><Sparkles size={23}/></div><h2>Tu primera meta empieza aquí</h2><p>Escribe algo que quieras lograr y el monto. KUDO te ayudará a visualizar tu avance.</p></section>}
   </div>
-}function KudoAI({tx,name}:{tx:Tx[],name:string}) {
-  const [messages,setMessages]=useState<{role:'ai'|'user';text:string}[]>([{role:'ai',text:`¡Hola, ${name}! 👋 Soy Kudo AI. Puedo analizar tus movimientos y ayudarte con ahorro, gastos, saldo o metas.`}]);
-  const [input,setInput]=useState('');
-  const answer=(question:string)=>{
-    const q=question.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-    const now=new Date();
-    const monthTx=tx.filter(t=>{const d=new Date(t.date);return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()});
-    const income=monthTx.filter(t=>t.type==='INCOME').reduce((sum,t)=>sum+t.amount,0);
-    const expenses=monthTx.filter(t=>t.type==='EXPENSE').reduce((sum,t)=>sum+t.amount,0);
-    const balance=income-expenses;
-    const byCategory=monthTx.filter(t=>t.type==='EXPENSE').reduce<Record<string,number>>((acc,t)=>{acc[t.category]=(acc[t.category]||0)+t.amount;return acc},{});
-    const ranked=Object.entries(byCategory).sort((a,b)=>b[1]-a[1]);
-    const top=ranked[0];
-    const categoryQuery=Object.keys(byCategory).find(category=>q.includes(category.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()));
-    const focus: [string,number] | undefined = categoryQuery ? [categoryQuery,byCategory[categoryQuery]] : top;
-    if(monthTx.length===0) return 'Aún no hay movimientos registrados este mes para hacer un análisis personalizado. Registra tus ingresos y gastos y luego pregúntame por tu saldo, tus categorías o un plan de ahorro.';
-    if(/viaj|vacacion|meta|objetivo/.test(q)) return `Sobre tu viaje: este mes tienes ${money(income)} en ingresos registrados y ${money(expenses)} en gastos, para un saldo neto registrado de ${money(balance)}. Para calcular un plan realista, dime cuánto cuesta el viaje y cuándo necesitas tener ese dinero.`;
-    if(/ahorr|guardar|apartar/.test(q)) {
-      if(top) { const suggested=top[1]*0.1; return `Este mes llevas ${money(expenses)} en gastos. Tu categoría más alta es ${top[0]} con ${money(top[1])}. Una meta inicial sería reducirla 10% y apartar ${money(suggested)} este mes. Si me dices cuánto quieres ahorrar y para cuándo, calculo el ritmo semanal.`; }
-      return `Tu saldo neto registrado este mes es ${money(balance)}. Puedes empezar apartando una cantidad fija cada semana. Dime cuánto quieres ahorrar y la fecha objetivo para armar un plan.`;
-    }
-    if(/ingres|saldo|balance|disponible/.test(q)) return `Este mes registras ${money(income)} en ingresos y ${money(expenses)} en gastos. La diferencia entre esos movimientos es ${money(balance)}. Es el saldo de lo que has registrado aquí, no necesariamente el saldo de tu cuenta bancaria.`;
-    if(/categoria|gast|analiz|donde|presupuest|limite|cuanto|comida|transporte|compras|hogar|salud|viajes|ocio/.test(q)) {
-      if(!focus) return `Este mes registras ${money(expenses)} en gastos. Aún no hay categorías suficientes para comparar; al registrar más movimientos podré señalar dónde se concentra el gasto.`;
-      const percent=expenses>0?Math.round(focus[1]/expenses*100):0;
-      const qualifier=categoryQuery?`En ${focus[0]} llevas ${money(focus[1])} (${percent}% de tus gastos).`:`Tu categoría con más gasto es ${focus[0]}: ${money(focus[1])} (${percent}%).`;
-      return `Este mes registras ${money(expenses)} en gastos. ${qualifier} Un límite de ${money(focus[1]*0.9)} para el próximo mes te permitiría reducir esa categoría alrededor de 10%.`;
-    }    return `Leí tu pregunta: “${question}”. Este mes llevas ${money(income)} en ingresos y ${money(expenses)} en gastos. Puedo analizar tu saldo, tus categorías de gasto o ayudarte a calcular una meta de ahorro.`;
-  };
-  const send=(e:FormEvent)=>{e.preventDefault();const q=input.trim();if(!q)return;setMessages(v=>[...v,{role:'user',text:q},{role:'ai',text:answer(q)}]);setInput('')};
-  return <><PageTitle eyebrow="TU COMPAÑERO FINANCIERO" title="Kudo AI ✨" sub="Ideas claras para sentirte bien con tu dinero."/><div className="privacy-note" role="note">🔒 Protegemos tus datos y cuidamos tu privacidad.</div><div className="ai-layout ai-layout-single"><section className="panel chat-panel"><div className="chat-head"><div className="spark-badge"><Sparkles size={19}/></div><div><b>Tu espacio con Kudo</b><small><i/> Analiza tus movimientos registrados</small></div></div><div className="chat-messages">{messages.map((m,i)=><div className={`message ${m.role}`} key={i}><div className="message-avatar">{m.role==='ai'?'✦':name.charAt(0).toUpperCase()}</div><p>{m.text}</p></div>)}</div><div className="suggestions">{['Analiza mis gastos','¿Cómo puedo ahorrar?','¿Cuál es mi saldo?'].map(s=><button onClick={()=>setInput(s)} key={s}>{s}</button>)}</div><form className="chat-input" onSubmit={send}><input placeholder="Escribe tu pregunta..." value={input} onChange={e=>setInput(e.target.value)}/><button aria-label="Enviar"><Send size={17}/></button></form><small className="ai-disclaimer">Kudo AI ofrece orientación general basada en tus movimientos registrados. No reemplaza asesoría financiera profesional.</small></section></div></>}
+}
 
 export default App
