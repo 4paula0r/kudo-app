@@ -48,6 +48,7 @@ test('recorrido E2E completo de KUDO 2.0', async ({ page }) => {
 
   await test.step('3. Cerrar sesión y probar credenciales incorrectas', async () => {
     await closeSession(page)
+    await page.goto('/login')
     const loginCta = page.getByRole('button', { name: /Iniciar sesión|Ya tengo una cuenta/ })
     if (await loginCta.count()) await loginCta.click()
     await page.getByLabel('Correo electrónico').fill(email)
