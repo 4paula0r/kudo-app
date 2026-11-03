@@ -1,12 +1,11 @@
-import { ArrowDownRight, ArrowUpRight, CarFront, Heart, House, MoreHorizontal, Plane, ShoppingBag, Utensils, Wallet } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 export type Movement = { id: string; title: string; category: string; type: 'INCOME' | 'EXPENSE'; amount: number; date: string }
 export type SavingGoal = { id: string; name: string; target: number; saved: number; deadline: string }
 
 const currency = (value: number, code: string) => new Intl.NumberFormat('es-GT', { style: 'currency', currency: code }).format(value)
-const categoryIcons: Record<string, typeof Utensils> = { Comida: Utensils, Transporte: CarFront, Hogar: House, Salud: Heart, Compras: ShoppingBag, Viajes: Plane, Ahorros: Wallet }
-const categoryColors = ['blue', 'mint', 'amber', 'rose']
+const chartColors = ['#2874d7', '#4db99e', '#e7b15e', '#94a5bb']
 
 export default function DashboardPage({ transactions, name, currencyCode }: { transactions: Movement[]; goals: SavingGoal[]; name: string; currencyCode: string }) {
   const income = transactions.filter(item => item.type === 'INCOME').reduce((sum, item) => sum + item.amount, 0)
@@ -18,8 +17,12 @@ export default function DashboardPage({ transactions, name, currencyCode }: { tr
   const monthExpenses = currentMonth.filter(item => item.type === 'EXPENSE').reduce((sum, item) => sum + item.amount, 0)
   const monthExpenseItems = currentMonth.filter(item => item.type === 'EXPENSE')
   const spendingByCategory = monthExpenseItems.reduce<Record<string, number>>((result, item) => { result[item.category] = (result[item.category] || 0) + item.amount; return result }, {})
-  const categories = Object.entries(spendingByCategory).sort((a, b) => b[1] - a[1]).slice(0, 4)
-  const maxCategory = Math.max(1, ...categories.map(([, amount]) => amount))
+  const rankedCategories = Object.entries(spendingByCategory).sort((a, b) => b[1] - a[1])
+  const categories = rankedCategories.length > 4
+    ? [...rankedCategories.slice(0, 3), ['Otros', rankedCategories.slice(3).reduce((sum, [, amount]) => sum + amount, 0)] as [string, number]]
+    : rankedCategories
+  let chartProgress = 0
+  const donutStops = categories.map(([, amount], index) => { const start = chartProgress; chartProgress += monthExpenses ? amount / monthExpenses * 100 : 0; return `${chartColors[index % chartColors.length]} ${start}% ${chartProgress}%` }).join(', ')
   const recent = [...transactions].sort((a, b) => +new Date(b.date) - +new Date(a.date)).slice(0, 4)
   const firstName = name.trim().split(/\s+/)[0] || 'ahí'
   const monthName = new Intl.DateTimeFormat('es-GT', { month: 'long' }).format(now)
@@ -35,7 +38,7 @@ export default function DashboardPage({ transactions, name, currencyCode }: { tr
     <div className="dashboard-v2-panels">
       <section className="dashboard-v2-panel" aria-labelledby="dashboard-spending-title">
         <div className="dashboard-v2-panel-heading"><div><h2 id="dashboard-spending-title">Gastos por categoría</h2><p>Registrados en {monthName}</p></div><NavLink to="/finanzas">Ver finanzas</NavLink></div>
-        {categories.length ? <div className="dashboard-v2-category-list">{categories.map(([category, amount], index) => { const Icon = categoryIcons[category] || MoreHorizontal; return <article className="dashboard-v2-category" key={category}><span className={`dashboard-v2-category-icon ${categoryColors[index]}`}><Icon size={15}/></span><div className="dashboard-v2-category-detail"><div><b>{category}</b><span>{currency(amount, currencyCode)}</span></div><div className="dashboard-v2-track"><i className={categoryColors[index]} style={{ width: `${Math.max(3, amount / maxCategory * 100)}%` }}/></div></div></article> })}</div> : <div className="dashboard-v2-empty"><p>Aún no hay gastos registrados este mes.</p><NavLink to="/transaccion">Registrar un gasto</NavLink></div>}
+        {categories.length ? <div className="dashboard-v2-chart-content"><div className="dashboard-v2-donut" role="img" aria-label={`Gráfica de gastos por categoría: ${categories.map(([category, amount]) => `${category}, ${currency(amount, currencyCode)}`).join('; ')}`} style={{ background: `conic-gradient(${donutStops})` }}><div><small>Gastado este mes</small><b>{currency(monthExpenses, currencyCode)}</b></div></div><div className="dashboard-v2-legend">{categories.map(([category, amount], index) => <div key={category}><i style={{ background: chartColors[index % chartColors.length] }}/><span>{category}<small>{currency(amount, currencyCode)}</small></span><b>{monthExpenses ? Math.round(amount / monthExpenses * 100) : 0}%</b></div>)}</div></div> : <div className="dashboard-v2-empty"><p>Aún no hay gastos registrados este mes.</p><NavLink to="/transaccion">Registrar un gasto</NavLink></div>}
       </section>
 
       <section className="dashboard-v2-panel" aria-labelledby="dashboard-recent-title">
