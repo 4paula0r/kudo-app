@@ -99,7 +99,7 @@ export default function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => vo
 
   return <main className="auth-page"><div className="auth-shell">
     <button type="button" className="auth-return" onClick={()=>{setScreen('welcome');setRecovery('none');setError('');setRecoveryNotice('');setResetUrl('')}}><ArrowLeft size={15}/> Volver</button>
-    <header className="auth-brand"><div className="auth-logo"><span>k</span><b/></div><h1>KUDO APP</h1><p>Registra tus gastos y entiende mejor tu dinero.</p></header>
+    <header className="auth-brand"><div className="auth-logo"><img src="/prototypes/images/kudo/kudo-logo-monograma.png" alt="KUDO" /></div><h1>KUDO APP</h1><p>Registra tus gastos y entiende mejor tu dinero.</p></header>
     <section className="auth-card"><div className="auth-tabs"><button type="button" className={mode === 'login' ? 'selected' : ''} onClick={() => changeMode('login')}>Ingresar</button><button type="button" className={mode === 'register' ? 'selected' : ''} onClick={() => changeMode('register')}>Crear cuenta</button></div>
       {mode === 'register' && <div className="auth-progress" aria-label={`Paso ${step + 1} de 5`}><i style={{ width: `${(step + 1) * 20}%` }}/></div>}
       <form onSubmit={submit}>
