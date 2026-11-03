@@ -12,6 +12,7 @@
 .ai-layout-single{grid-template-columns:minmax(0,1fr)}
 .ai-layout-single .chat-panel{min-height:540px}
 .tour-launch{color:#7254c5}
+.agent-fab{position:fixed;right:29px;bottom:91px;z-index:20;width:46px;height:46px;display:grid;place-items:center;border:1px solid #e5def6;border-radius:50%;background:#fff;color:#7555d9;box-shadow:0 7px 20px #44327524;transition:transform .18s,background .18s}.agent-fab:hover{transform:translateY(-2px);background:#f6f2ff}
 .tour-backdrop{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:18px;background:#17142678;backdrop-filter:blur(3px)}
 .tour-card{width:min(420px,100%);padding:23px;border:1px solid #eee9f5;border-radius:18px;background:#fff;box-shadow:0 22px 70px #19132d40}
 .tour-card-top{display:flex;align-items:center;justify-content:space-between;color:#8f83aa;font-size:9px;font-weight:700;letter-spacing:.13em}
@@ -20,7 +21,7 @@
 .tour-symbol{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#f0ebfd;color:#7555d9}
 .tour-card h2{margin:14px 0 7px;font:700 21px Manrope;color:#302c43}.tour-card>p{min-height:42px;margin:0;color:#777183;font-size:12px;line-height:1.6}
 .tour-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:23px}.tour-actions>div{display:flex;gap:8px}.tour-actions button{min-height:37px;padding:0 13px;border-radius:9px;font-size:10px;font-weight:600}.tour-skip,.tour-back{border:1px solid #e8e4ef;background:#fff;color:#777183}.tour-next{border:0;background:#7555d9;color:white}.tour-back:disabled{opacity:.45;cursor:default}
-@media(max-width:520px){.live-dashboard-simple .live-dashboard-heading h1{font-size:22px}.live-balance-simple{min-height:165px;padding:17px}.live-balance-simple>b{font-size:26px;margin:20px 0}.ai-layout-single .chat-panel{min-height:440px}.tour-card{padding:18px}.tour-actions button{padding:0 9px;font-size:9px}}
+@media(max-width:520px){.live-dashboard-simple .live-dashboard-heading h1{font-size:22px}.live-balance-simple{min-height:165px;padding:17px}.live-balance-simple>b{font-size:26px;margin:20px 0}.ai-layout-single .chat-panel{min-height:440px}.tour-card{padding:18px}.tour-actions button{padding:0 9px;font-size:9px}.agent-fab{right:23px;bottom:84px;width:44px;height:44px}}
 .live-balance-simple>b{font:700 30px Manrope,sans-serif;margin:25px 0 24px;letter-spacing:-.04em}
 @media(max-width:520px){.live-balance-simple>b{font-size:26px;margin:20px 0}}
 .live-dashboard-heading,.finance-page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}

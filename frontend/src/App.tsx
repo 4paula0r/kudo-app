@@ -90,6 +90,7 @@ function App(){
         </Routes></div><footer>Una plataforma para ayudarte a registrar tus gastos</footer>
       </main>
       <NavLink to="/transaccion" className="global-fab" aria-label="Registrar nuevo movimiento" title="Registrar nuevo movimiento"><Plus size={21}/><span>Nuevo movimiento</span></NavLink>
+      <NavLink to="/kudo-ai" className="agent-fab" aria-label="Abrir Kudo AI" title="Hablar con Kudo AI"><Sparkles size={20}/></NavLink>
       {tourIndex!==null&&<ProductTour step={tourIndex} onClose={closeTour} onNext={()=>tourIndex<tourSteps.length-1?changeTourStep(tourIndex+1):closeTour()} onBack={()=>changeTourStep(Math.max(0,tourIndex-1))}/>}
     </div>:<Navigate to="/login" replace/>}/>
   </Routes>
