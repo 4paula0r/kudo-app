@@ -5,7 +5,7 @@
 - **Base aislada:** PostgreSQL 16 temporal, base `kudo_test`; la configuración rechaza nombres de base distintos.
 - **Comando:** `npm run test:e2e` desde la raíz, con `DATABASE_URL` apuntando a `kudo_test` y variables de prueba temporales no documentadas aquí.
 - **Estado:** aprobado en la última ejecución.
-- **Resultado:** 1 prueba Playwright aprobada, 0 fallidas, 0 omitidas (1 recorrido E2E con 12 pasos); 15.6 s reportados para la prueba (24.6 s incluyendo preparación y cierre de servidores).
+- **Resultado:** 1 prueba Playwright aprobada, 0 fallidas, 0 omitidas (1 recorrido E2E con 12 pasos); 14.0 s reportados para la prueba (23.6 s incluyendo preparación y cierre de servidores).
 - **Vista del navegador:** Chromium, 1440 × 1000.
 
 El recorrido verificó:
@@ -25,4 +25,4 @@ El recorrido verificó:
 
 El test usa una sola cuenta y datos sintéticos dentro de la base temporal. Se generaron capturas reales en `capturas/` y un reporte HTML en `playwright-report/index.html`. Los intentos iniciales detectaron selectores ambiguos; se corrigió el test y la ejecución final aprobó.
 
-El recorrido no cubre Kudo AI. En la primera ejecución remota, instalación, migraciones, compilación y `npm test` pasaron; Playwright se quedó en la pantalla de autenticación después del cierre de sesión al probar el login incorrecto. Se hizo explícita la navegación a `/login` en ese paso y el recorrido local volvió a aprobar. El resultado final de GitHub Actions queda pendiente de la siguiente ejecución.
+El recorrido no cubre Kudo AI. Las dos primeras ejecuciones de CI pasaron instalación, migraciones, compilación y `npm test`, pero detectaron diferencias reales entre el marcado de autenticación y de la barra de presupuesto de la rama remota y los selectores originales. El test ahora abre `/login` explícitamente tras cerrar sesión y verifica el progreso del límite mediante los atributos accesibles si existen o mediante el ancho real de la barra (`25%`) en el marcado actual. La nueva ejecución remota aún está pendiente.

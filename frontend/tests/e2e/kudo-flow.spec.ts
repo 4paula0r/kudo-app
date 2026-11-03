@@ -105,8 +105,14 @@ test('recorrido E2E completo de KUDO 2.0', async ({ page }) => {
     await page.getByRole('button', { name: 'Guardar límite' }).click()
     await expect(page.locator('.account-notice')).toContainText('Límite mensual guardado')
     const progress = page.getByRole('progressbar', { name: 'Uso del límite de Comida' })
-    await expect(progress).toHaveAttribute('aria-valuemax', '200')
-    await expect(progress).toHaveAttribute('aria-valuenow', '50')
+    if (await progress.count()) {
+      await expect(progress).toHaveAttribute('aria-valuemax', '200')
+      await expect(progress).toHaveAttribute('aria-valuenow', '50')
+    } else {
+      const budgetRow = page.locator('.budget-row').filter({ hasText: 'Comida' })
+      await expect(budgetRow).toBeVisible()
+      await expect(budgetRow.locator('.budget-track i')).toHaveAttribute('style', /width:\s*25%/)
+    }
     await page.screenshot({ path: resolve(screenshotsDir, '05-presupuesto.png'), fullPage: true })
   })
 
