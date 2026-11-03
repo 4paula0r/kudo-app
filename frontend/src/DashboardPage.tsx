@@ -15,6 +15,29 @@ export default function DashboardPage({ transactions, name, currencyCode }: { tr
   const currentMonth = transactions.filter(item => { const date = new Date(item.date); return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() })
   const monthIncome = currentMonth.filter(item => item.type === 'INCOME').reduce((sum, item) => sum + item.amount, 0)
   const monthExpenses = currentMonth.filter(item => item.type === 'EXPENSE').reduce((sum, item) => sum + item.amount, 0)
+  const chartDays = Math.max(1, now.getDate())
+  const dailyNet = currentMonth.reduce<Record<number, number>>((result, item) => {
+    const day = new Date(item.date).getDate()
+    result[day] = (result[day] || 0) + (item.type === 'INCOME' ? item.amount : -item.amount)
+    return result
+  }, {})
+  const chartValues: number[] = []
+  let runningBalance = balance - monthIncome + monthExpenses
+  for (let day = 1; day <= chartDays; day++) {
+    runningBalance += dailyNet[day] || 0
+    chartValues.push(runningBalance)
+  }
+  const chartMin = Math.min(...chartValues)
+  const chartMax = Math.max(...chartValues)
+  const chartRange = chartMax - chartMin || Math.max(Math.abs(chartMax) * .12, 1)
+  const chartPoints = chartValues.map((value, index) => ({ x: chartValues.length === 1 ? 0 : index / (chartValues.length - 1) * 600, y: 112 - ((value - chartMin) / chartRange) * 92 }))
+  const chartPath = chartPoints.reduce((path, point, index) => {
+    if (index === 0) return `M ${point.x} ${point.y}`
+    const previous = chartPoints[index - 1]
+    const middleX = (previous.x + point.x) / 2
+    const middleY = (previous.y + point.y) / 2
+    return `${path} Q ${previous.x} ${previous.y} ${middleX} ${middleY}`
+  }, '') + (chartPoints.length > 1 ? ` T ${chartPoints[chartPoints.length - 1].x} ${chartPoints[chartPoints.length - 1].y}` : ` L 600 ${chartPoints[0].y}`)
   const monthExpenseItems = currentMonth.filter(item => item.type === 'EXPENSE')
   const spendingByCategory = monthExpenseItems.reduce<Record<string, number>>((result, item) => { result[item.category] = (result[item.category] || 0) + item.amount; return result }, {})
   const rankedCategories = Object.entries(spendingByCategory).sort((a, b) => b[1] - a[1])
@@ -28,12 +51,14 @@ export default function DashboardPage({ transactions, name, currencyCode }: { tr
   const monthName = new Intl.DateTimeFormat('es-GT', { month: 'long' }).format(now)
 
   return <div className="dashboard-v2">
-    <header className="dashboard-v2-heading"><div><span className="eyebrow">TU RESUMEN</span><h1>Hola, {firstName} 👋</h1><p>Un vistazo claro a cómo va tu dinero.</p></div></header>
+    <header className="dashboard-v2-heading"><div><span className="eyebrow">TU RESUMEN</span><h1>Hola, {firstName} 👋</h1><p>Tu dinero, bajo control.</p></div></header>
 
-    <section className="dashboard-v2-balance" aria-label="Resumen de balance">
-      <div className="dashboard-v2-balance-main"><span>Balance disponible</span><strong>{currency(balance, currencyCode)}</strong><small>Según tus movimientos registrados</small></div>
-      <div className="dashboard-v2-month"><span className="dashboard-v2-period">Este mes · {monthName}</span><div><span><i className="income-dot"><ArrowDownRight size={14}/></i>Ingresos</span><b className="income-text">{currency(monthIncome, currencyCode)}</b></div><div><span><i className="expense-dot"><ArrowUpRight size={14}/></i>Gastos</span><b>{currency(monthExpenses, currencyCode)}</b></div></div>
+    <section className="dashboard-v2-balance" aria-label="Balance disponible y evolución">
+      <div className="dashboard-v2-balance-main"><span>Balance disponible</span><strong>{currency(balance, currencyCode)}</strong><small><ArrowUpRight size={13}/> Tu resumen financiero</small></div>
+      <svg className="dashboard-v2-balance-chart" viewBox="0 0 600 140" preserveAspectRatio="none" role="img" aria-label={`Evolución diaria del balance en ${monthName}`}><path d={chartPath}/></svg>
     </section>
+
+    <div className="dashboard-v2-monthly-stats" aria-label={`Ingresos y gastos de ${monthName}`}><article><span>Ingresos</span><b className="income-text">{currency(monthIncome, currencyCode)}</b></article><article><span>Gastos</span><b>{currency(monthExpenses, currencyCode)}</b></article></div>
 
     <div className="dashboard-v2-panels">
       <section className="dashboard-v2-panel" aria-labelledby="dashboard-spending-title">
