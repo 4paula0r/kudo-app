@@ -25,7 +25,7 @@ services:
       DATABASE_URL: postgresql://kudo:${POSTGRES_PASSWORD:-12345}@db:5432/kudo?schema=public
       JWT_SECRET: ${JWT_SECRET:-local-kudo-secret-please-change-before-deployment-2026}
       PORT: 4000
-      CLIENT_ORIGIN: http://localhost:8080
+      CLIENT_ORIGIN: http://localhost:5173
       # Solo para pruebas locales; desactívalo y configura correo antes de desplegar públicamente.
       ALLOW_DEV_PASSWORD_RESET: "true"
     depends_on:
