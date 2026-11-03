@@ -5,3 +5,7 @@ dist/
 coverage/
 backend/prisma/dev.db
 backend/prisma/dev.db-journal
+*.tsbuildinfo
+.env.*
+!.env.example
+frontend/dist/

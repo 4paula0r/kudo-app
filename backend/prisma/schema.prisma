@@ -25,6 +25,7 @@ model User {
   transactions Transaction[]
   goals        Goal[]
   contributions GoalContribution[]
+  budgets      Budget[]
 }
 
 model Transaction {
@@ -66,6 +67,19 @@ model GoalContribution {
   createdAt DateTime @default(now())
   @@index([goalId, date])
   @@index([userId, date])
+}
+
+model Budget {
+  id           String   @id @default(cuid())
+  category     String
+  monthlyLimit Decimal  @db.Decimal(12, 2)
+  month        DateTime @db.Date
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, category, month])
+  @@index([userId, month])
 }
 
 enum TxType {

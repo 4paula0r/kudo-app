@@ -66,6 +66,12 @@ const contributionSchema = z.object({
   note: z.string().trim().max(120).optional(),
   date: z.string().datetime().optional(),
 })
+const budgetInput = z.object({
+  category: z.string().trim().min(1).max(40),
+  monthlyLimit: z.number().positive().max(999999999),
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'El período debe tener formato AAAA-MM.'),
+})
+const budgetMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'El período debe tener formato AAAA-MM.')
 
 const transactionJson = <T extends { amount: Prisma.Decimal | number }>(item: T) => ({ ...item, amount: Number(item.amount) })
 const goalJson = <T extends { target: Prisma.Decimal | number; saved: Prisma.Decimal | number }>(item: T) => ({
@@ -197,6 +203,51 @@ app.post('/api/goals/:id/contributions', auth, route(async (req, res) => {
   return res.status(201).json({ contribution: { ...result.contribution, amount: Number(result.contribution.amount) }, goal: goalJson(result.goal) })
 }))
 
+app.get('/api/budgets', auth, route(async (req, res) => {
+  const month = budgetMonth.parse(req.query.month || new Date().toISOString().slice(0, 7))
+  const start = new Date(`${month}-01T00:00:00.000Z`)
+  const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 1))
+  const budgets = await db.budget.findMany({ where: { userId: req.userId, month: start }, orderBy: { category: 'asc' } })
+  const spent = await db.transaction.groupBy({
+    by: ['category'],
+    where: { userId: req.userId, type: TxType.EXPENSE, date: { gte: start, lt: end } },
+    _sum: { amount: true },
+  })
+  const spentByCategory = new Map(spent.map(item => [item.category, Number(item._sum.amount || 0)]))
+  return res.json({ month, budgets: budgets.map(item => {
+    const amountSpent = spentByCategory.get(item.category) || 0
+    const monthlyLimit = Number(item.monthlyLimit)
+    return { id: item.id, category: item.category, monthlyLimit, amountSpent, remaining: monthlyLimit - amountSpent, percent: monthlyLimit ? Math.round(amountSpent / monthlyLimit * 100) : 0, month: item.month }
+  }) })
+}))
+
+app.post('/api/budgets', auth, route(async (req, res) => {
+  const d = budgetInput.parse(req.body)
+  const month = new Date(`${d.month}-01T00:00:00.000Z`)
+  const budget = await db.budget.upsert({
+    where: { userId_category_month: { userId: req.userId!, category: d.category, month } },
+    create: { userId: req.userId!, category: d.category, monthlyLimit: d.monthlyLimit, month },
+    update: { monthlyLimit: d.monthlyLimit },
+  })
+  return res.status(201).json({ budget: { ...budget, monthlyLimit: Number(budget.monthlyLimit) } })
+}))
+
+app.patch('/api/budgets/:id', auth, route(async (req, res) => {
+  const id = z.string().min(1).parse(req.params.id)
+  const d = z.object({ monthlyLimit: z.number().positive().max(999999999) }).parse(req.body)
+  const result = await db.budget.updateMany({ where: { id, userId: req.userId }, data: { monthlyLimit: d.monthlyLimit } })
+  if (!result.count) return res.status(404).json({ message: 'No se encontró el presupuesto.' })
+  const budget = await db.budget.findFirst({ where: { id, userId: req.userId } })
+  return res.json({ budget: { ...budget!, monthlyLimit: Number(budget!.monthlyLimit) } })
+}))
+
+app.delete('/api/budgets/:id', auth, route(async (req, res) => {
+  const id = z.string().min(1).parse(req.params.id)
+  const result = await db.budget.deleteMany({ where: { id, userId: req.userId } })
+  if (!result.count) return res.status(404).json({ message: 'No se encontró el presupuesto.' })
+  return res.status(204).end()
+}))
+
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof z.ZodError) return res.status(400).json({ message: err.issues[0]?.message || 'Revisa los datos ingresados.', code: 'VALIDATION_ERROR' })
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -207,8 +258,14 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   return res.status(500).json({ message: 'Ocurrió un error interno. Intenta de nuevo.', code: 'INTERNAL_ERROR' })
 })
 
-const server = app.listen(port, () => console.log(`KUDO API disponible en http://localhost:${port}`))
+export { app, db }
+const server = process.env.NODE_ENV === 'test' ? null : app.listen(port, () => console.log(`KUDO API disponible en http://localhost:${port}`))
 async function shutdown() {
+  if (!server) {
+    await db.$disconnect()
+    process.exit(0)
+    return
+  }
   server.close(async () => {
     await db.$disconnect()
     process.exit(0)

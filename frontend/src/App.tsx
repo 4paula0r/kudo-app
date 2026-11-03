@@ -2,8 +2,10 @@ import React,{useEffect,useState,FormEvent} from 'react'
 import {NavLink,Routes,Route,Navigate,useLocation} from 'react-router-dom'
 import {Home,ChartNoAxesCombined,Plus,Target,Sparkles,Bell,ArrowUpRight,ArrowDownRight,Utensils,Car,ShoppingBag,House,Heart,Plane,MoreHorizontal,Wallet,CalendarDays,Paperclip,Send,LogOut,Menu,X,TrendingUp,Pencil} from 'lucide-react'
 import {request,token} from './api'
-import PrototypeFrame from './PrototypeFrame'
 import Account from './Account'
+import LoginPage from './LoginPage'
+import DashboardPage from './DashboardPage'
+import FinancePage from './FinancePage'
 
 type Tx={id:string,title:string,category:string,type:'INCOME'|'EXPENSE',amount:number,date:string,paymentMethod?:string}
 type Goal={id:string,name:string,target:number,saved:number,deadline:string}
@@ -24,7 +26,8 @@ function App(){
 
   useEffect(()=>{
     if(!token()) return
-    request<{transactions:Tx[]}>('/transactions').then(d=>setTx(d.transactions)).catch(()=>{})
+    const loadTransactions=async()=>{const all:Tx[]=[];let page=1;let pages=1;do{const d=await request<{transactions:Tx[],pagination:{pages:number}}>(`/transactions?page=${page}&limit=100`);all.push(...d.transactions);pages=d.pagination.pages;page+=1}while(page<=pages);setTx(all)}
+    loadTransactions().catch(()=>{})
     request<{goals:Goal[]}>('/goals').then(d=>setGoals(d.goals)).catch(()=>{})
     if(location.pathname==='/cuenta') request<{user:Profile}>('/auth/me').then(d=>{setUser(d.user);localStorage.setItem('kudo-user',JSON.stringify(d.user));localStorage.setItem('kudo-currency',d.user.currency||'GTQ')}).catch(()=>{})
   },[logged,location.pathname])
@@ -42,7 +45,7 @@ function App(){
   const contribute=async(id:string,amount:number)=>{const d=await request<{goal:Goal}>(`/goals/${id}/contributions`,{method:'POST',body:JSON.stringify({amount})});setGoals(v=>v.map(g=>g.id===id?d.goal:g))}
 
   return <Routes>
-    <Route path="/login" element={<PrototypeFrame src="/prototypes/login.html" title="Inicio de sesión KUDO"/>}/>
+    <Route path="/login" element={<LoginPage onLogin={profile=>{setUser(profile);setLogged(true)}}/>}/>
     <Route path="/*" element={logged?<div className={`shell ${menu?'menu-open':''}`}>
       <aside className={`sidebar ${menu?'open':''}`}>
         <div className="brand"><div className="brand-mark">k</div><span>KUDO<small>FINANZAS PERSONALES</small></span><button className="close-menu" onClick={()=>setMenu(false)}><X/></button></div>
@@ -57,8 +60,8 @@ function App(){
       {menu&&<button className="scrim" onClick={()=>setMenu(false)}/>}
       <main className="main"><header className="topbar"><button className="mobile-menu" onClick={()=>setMenu(true)}><Menu/></button><div className="crumb">Mi espacio <span>/</span> <b>{location.pathname==='/cuenta'?'Mi cuenta':nav.find(n=>n[0]===location.pathname)?.[1]||'Inicio'}</b></div><div className="top-actions"><button className="icon-btn notification" aria-label="Notificaciones"><Bell size={19}/><i/></button><NavLink to="/cuenta" className="profile-mini account-link" aria-label="Abrir mi cuenta"><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>Mi cuenta</small></span></NavLink></div></header>
         <div className="content"><Routes>
-          <Route path="/" element={<PrototypeFrame src="/prototypes/dashboard.html" title="Dashboard KUDO"/>}/>
-          <Route path="/finanzas" element={<PrototypeFrame src="/prototypes/presupuestos.html" title="Presupuestos KUDO"/>}/>
+          <Route path="/" element={<DashboardPage transactions={tx} goals={goals} name={user?.name||'ahí'} currencyCode={user?.currency||currencyCode()}/>}/>
+          <Route path="/finanzas" element={<FinancePage transactions={tx} currencyCode={user?.currency||currencyCode()}/>}/>
           <Route path="/transaccion" element={<NewTransaction addTx={addTx}/>}/>
           <Route path="/movimientos" element={<Finances tx={tx} updateTx={updateTx}/>}/>
           <Route path="/metas" element={<Goals goals={goals} addGoal={addGoal} contribute={id=>contribute(id,100)}/>}/>
