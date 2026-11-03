@@ -1,3 +1,3 @@
 const API='/api'
 export function token(){return localStorage.getItem('kudo-token')}
-export async function request<T>(path:string, options:RequestInit={}):Promise<T>{const res=await fetch(API+path,{...options,headers:{'Content-Type':'application/json',...(token()?{Authorization:`Bearer ${token()}`} : {}),...options.headers}});const data=await res.json();if(!res.ok)throw new Error(data.message||'No se pudo completar la solicitud');return data}
+export async function request<T>(path:string, options:RequestInit={}):Promise<T>{const res=await fetch(API+path,{...options,headers:{'Content-Type':'application/json',...(token()?{Authorization:`Bearer ${token()}`} : {}),...options.headers}});let data: any;try{data=res.status===204?undefined:await res.json()}catch{throw new Error('La API no respondió en formato JSON. Reinicia el backend actualizado e inténtalo de nuevo.')}if(!res.ok)throw new Error(data?.message||'No se pudo completar la solicitud');return data as T}

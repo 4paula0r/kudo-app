@@ -1,43 +1,41 @@
-# Revisión del proyecto KUDO frente a la rúbrica final
+# Revisión de KUDO frente a la rúbrica final
 
-**Revisión realizada el 2 de noviembre de 2026.** KUDO cuenta con una base funcional de React, Express, PostgreSQL y Prisma, pero todavía no cumple todos los requisitos de entrega final. Esta revisión separa lo que ya existe de lo pendiente para evitar presentar prototipos o datos de muestra como funciones terminadas.
+**Actualizada el 2 de noviembre de 2026.** Esta revisión refleja el código de `prepare-kudo-proyecto1`. Antes de entregar, compara cada punto con la última versión de la consigna del curso.
 
-| Criterio | Estado | Evidencia y trabajo pendiente |
+| Criterio | Estado actual | Pendiente para cerrar |
 |---|---|---|
-| Análisis y diseño (3) | Parcial | `docs/entregable-1/` contiene problema, requerimientos, modelo, arquitectura y vistas. Completar integrantes, datos administrativos y evidencia de decisiones del equipo para la defensa. |
-| Frontend React + TypeScript (5.5) | Parcial | La aplicación tiene rutas y componentes React/TypeScript. Login, dashboard y finanzas todavía se muestran como HTML prototipo en iframe; migrarlos a componentes React. Presupuestos sigue siendo principalmente prototipo. |
-| Backend Express + TypeScript (4) | Parcial | API REST con registro, login, perfil, movimientos, metas, filtros y aportes. Se añadieron edición y eliminación de movimientos. Faltan presupuestos y terminar la integración de todas las pantallas con API. |
-| PostgreSQL + Prisma (3) | Parcial | Prisma gestiona usuarios, movimientos, metas y aportes con migraciones. Las categorías se guardan como texto y aún no hay modelos de presupuesto ni cuenta financiera. |
-| Seguridad (2) | Parcial | BCrypt, JWT, Zod, Helmet, CORS, límites de solicitudes y consultas privadas por propietario. Revisar almacenamiento del token en navegador, política de contraseñas y una lista OWASP de verificación antes de publicar. |
-| Pruebas (1.5) | Pendiente | No hay suites automatizadas de frontend, API ni E2E. Añadir pruebas de validación, autorización, operaciones CRUD y flujos principales antes de la entrega. |
-| Git/GitHub y colaboración (1.5) | Pendiente de evidencia | El repositorio local todavía no tiene commits ni remoto configurado. Crear commits por cambios, enlazar GitHub y documentar la contribución de cada integrante. |
-| Docker + CI/CD (1.5) | Parcial | `docker-compose.yml` inicia PostgreSQL. Faltan contenedores para API y frontend, además de un flujo CI/CD que compile y ejecute pruebas. |
-| Despliegue, accesibilidad y rendimiento (1.5) | Pendiente | Solo hay ejecución local. Falta despliegue público, revisión con teclado/lector de pantalla y métricas reproducibles de rendimiento. |
-| Documentación y defensa (1.5) | Parcial | Existe README y documentación del Entregable 1. Añadir guía de despliegue, API, pruebas, decisiones de seguridad, capturas y evidencia para la presentación. |
+| Análisis y diseño (3) | Parcial | Completar portada, integrantes, datos administrativos, decisiones finales y evidencias de participación. La documentación del Entregable 1 está en `docs/entregable-1/`. |
+| Frontend React + TypeScript (5.5) | Mejorado, aún parcial | Login, dashboard y finanzas ya son pantallas React conectadas a la API; las páginas HTML quedan como referencia, no como iframes activos. Revisar todos los flujos visualmente, completar pruebas de interfaz y decidir si presupuestos satisface todas las vistas de la consigna. |
+| Backend Express + TypeScript (4) | Parcial | La API incluye autenticación, perfil, movimientos, metas, aportes y presupuestos, con validación y aislamiento por propietario. Revisar los requisitos concretos de la rúbrica y documentar cada ruta. |
+| PostgreSQL + Prisma (3) | Parcial | Prisma administra usuarios, movimientos, metas, aportes y límites mensuales. Las categorías siguen siendo texto libre y no hay cuentas bancarias reales. |
+| Seguridad (2) | Parcial | Se usan BCrypt, JWT, Zod, Helmet, CORS, límites de solicitudes y filtros por propietario. El token vive en `localStorage`; para un servicio público se deben usar cookies `HttpOnly`, revisar recuperación de contraseña, vencimiento/revocación y completar una lista OWASP. |
+| Pruebas (1.5) | Parcial | Hay pruebas API con PostgreSQL para autorización, registro, operaciones de movimientos y límites mensuales. Ampliar a login, metas/aportes, validaciones restantes y una prueba de flujo de navegador. |
+| Git/GitHub y colaboración (1.5) | Parcial | El código está publicado en la rama `prepare-kudo-proyecto1`. Falta crear y revisar un pull request, integrar los cambios a `main` y dejar evidencia de commits y contribuciones de cada integrante. |
+| Docker + CI/CD (1.5) | Implementación local y CI lista | Docker Compose puede iniciar PostgreSQL, API y frontend. GitHub Actions instala dependencias, migra, compila y prueba en push y pull request. Falta verificar el flujo en GitHub y, si se pide CD, definir una plataforma y secretos de despliegue. |
+| Despliegue, accesibilidad y rendimiento (1.5) | Pendiente | No hay URL pública. Probar teclado, foco, contraste, etiquetas/lector de pantalla, tamaño móvil y medir rendimiento con evidencia. El despliegue requiere cuenta y configuración del equipo. |
+| Documentación y defensa (1.5) | Parcial | README, API y arquitectura están documentados. Faltan integrantes/datos de portada, capturas recientes, resultados de pruebas, evidencia de accesibilidad y material de presentación/defensa. |
 
-## Funciones que aún se muestran como demostración
+## Funciones no incluidas como servicios reales
 
-- El dashboard conserva cifras, gráficos y algunas fechas escritos como datos de ejemplo; no debe presentarse como cálculo real hasta conectarlo a consultas por usuario y período.
-- El prototipo de presupuestos no persiste límites ni compara gastos reales con ellos.
-- Las opciones Face ID, Google y Apple del login no tienen integración de autenticación.
-- Las pantallas HTML cargan estilos y fuentes por CDN; sin conexión pueden perder su apariencia.
+- La cifra inicial de Inicio conserva Q 4,850 y se ajusta con los movimientos del período. Debe explicarse como saldo inicial configurado para la demostración; si la rúbrica exige saldo real por usuario, añadir un campo editable en el perfil antes de entregar.
+- Face ID, Google y Apple no se ofrecen como botones porque no hay proveedores de autenticación configurados.
+- Kudo AI es una guía local basada en movimientos registrados y reglas de texto, no un modelo generativo ni asesoría financiera.
+- No hay conexión bancaria ni detección automática de Apple Pay.
 
-## Rediseño de identidad
+## Pendientes para la entrega académica
 
-La propuesta de mascota se dejó pendiente porque el equipo quiere enviar una referencia visual propia. El rediseño se retomará a partir de ese logo para mantener una identidad que sí represente al equipo.
+- Confirmar en el PDF de la consigna el formato, datos y archivos que pide la entrega final. El PDF en `docs/referencia/` se conserva como fuente.
+- Escribir portada con curso, sección, docente, fecha e integrantes, según corresponda.
+- Reunir capturas de registro, ingresos, gastos, presupuestos, edición, metas y análisis.
+- Ejecutar y guardar el resultado de `npm run build`, `npm test` y `docker compose up --build`.
+- Revisar el pull request y la rama que se entregará; no entregar solo una rama sin explicar su estado.
+- Preparar una demostración y comprobar que cada integrante pueda explicar frontend, API, modelo de datos, seguridad y límites conocidos.
+- Subir los archivos al portal indicado por el curso; la documentación fuente indica que no se reciben por correo.
 
-## Condiciones de entrega
+## Orden práctico sugerido
 
-- El equipo debe estar formado por un máximo de cuatro integrantes; el repositorio todavía no documenta la composición del equipo ni los datos que deban aparecer en la portada.
-- Todos los integrantes deben poder explicar y demostrar el funcionamiento de toda la solución durante la defensa.
-- La entrega se presenta en el portal habilitado por el curso. El documento indica que no se aceptan entregas por correo u otros medios.
-- La solución y sus recursos deben ser propios y el equipo debe poder explicar su autoría; no se permite copiar el proyecto ni usar plantillas de terceros.
-
-## Orden recomendado para cerrar las brechas
-
-1. Migrar dashboard, login y finanzas de los prototipos HTML a React y conectar sus datos.
-2. Implementar el módulo de presupuestos con esquema Prisma, API y controles de interfaz.
-3. Añadir pruebas de API y E2E para autenticación, movimientos, metas y presupuestos.
-4. Crear Dockerfiles, completar Compose y configurar CI para compilar y probar cada cambio.
-5. Desplegar la aplicación, revisar accesibilidad y registrar métricas de rendimiento.
-6. Preparar commits de GitHub, documentación de instalación y material de defensa.
+1. Completar datos administrativos y material de defensa.
+2. Validar los flujos de la app en navegador y cerrar cualquier error de la rúbrica.
+3. Ejecutar pruebas y Docker; guardar capturas/logs de resultados.
+4. Revisar pull request y decidir si se integra a `main`.
+5. Completar revisión de accesibilidad/rendimiento y publicar solo si el curso lo exige y el equipo tiene una cuenta de despliegue.

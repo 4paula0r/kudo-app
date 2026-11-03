@@ -4,11 +4,43 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: kudo
-      POSTGRES_PASSWORD: kudo_local
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345}
       POSTGRES_DB: kudo
     ports:
       - "5433:5432"
     volumes:
       - kudo_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kudo -d kudo"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://kudo:${POSTGRES_PASSWORD:-12345}@db:5432/kudo?schema=public
+      JWT_SECRET: ${JWT_SECRET:-local-kudo-secret-please-change-before-deployment-2026}
+      PORT: 4000
+      CLIENT_ORIGIN: http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${API_PORT:-4001}:4000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
 volumes:
   kudo_data:

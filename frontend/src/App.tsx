@@ -1,9 +1,12 @@
-import React,{useEffect,useState,FormEvent} from 'react'
-import {NavLink,Routes,Route,Navigate,useLocation} from 'react-router-dom'
-import {Home,ChartNoAxesCombined,Plus,Target,Sparkles,Bell,ArrowUpRight,ArrowDownRight,Utensils,Car,ShoppingBag,House,Heart,Plane,MoreHorizontal,Wallet,CalendarDays,Paperclip,Send,LogOut,Menu,X,TrendingUp,Pencil} from 'lucide-react'
+import React,{useEffect,useRef,useState,FormEvent} from 'react'
+import {NavLink,Routes,Route,Navigate,useLocation,useNavigate} from 'react-router-dom'
+import {Home,ChartNoAxesCombined,Plus,Target,Sparkles,Bell,ArrowUpRight,ArrowDownRight,Utensils,Car,ShoppingBag,House,Heart,Plane,MoreHorizontal,Wallet,CalendarDays,Paperclip,LogOut,Menu,X,TrendingUp,Pencil,CircleHelp} from 'lucide-react'
 import {request,token} from './api'
-import PrototypeFrame from './PrototypeFrame'
 import Account from './Account'
+import LoginPage from './LoginPage'
+import DashboardPage from './DashboardPage'
+import FinancePage from './FinancePage'
+import KudoAI from './KudoAI'
 
 type Tx={id:string,title:string,category:string,type:'INCOME'|'EXPENSE',amount:number,date:string,paymentMethod?:string}
 type Goal={id:string,name:string,target:number,saved:number,deadline:string}
@@ -14,17 +17,36 @@ const currencyCode=()=>localStorage.getItem('kudo-currency')||'GTQ'
 const currencySymbol=()=>({GTQ:'Q',USD:'$',EUR:'€'}[currencyCode()]||'Q')
 
 const nav=[['/','Inicio',Home],['/finanzas','Finanzas',ChartNoAxesCombined],['/transaccion','Añadir',Plus],['/metas','Metas',Target],['/kudo-ai','Kudo AI',Sparkles]] as const
+const tourSteps=[
+  {path:'/',title:'Inicio',description:'Aquí ves el balance de tus movimientos registrados y lo último que agregaste.'},
+  {path:'/finanzas',title:'Finanzas',description:'Consulta tus ingresos, gastos y presupuestos por categoría.'},
+  {path:'/transaccion',title:'Añadir movimiento',description:'Registra un ingreso o un gasto para mantener tu balance al día.'},
+  {path:'/metas',title:'Metas',description:'Crea objetivos de ahorro y registra cuánto has aportado.'},
+  {path:'/kudo-ai',title:'Kudo AI',description:'Pregunta sobre tus movimientos y recibe ideas basadas en tus registros.'},
+]
 function App(){
   const location=useLocation()
+  const navigate=useNavigate()
   const [logged,setLogged]=useState(!!token())
   const [user,setUser]=useState<Profile|null>(()=>savedProfile())
   const [tx,setTx]=useState<Tx[]>([])
   const [goals,setGoals]=useState<Goal[]>([])
   const [menu,setMenu]=useState(false)
+  const [tourIndex,setTourIndex]=useState<number|null>(null)
+  const [headerMenu,setHeaderMenu]=useState<'profile'|'notifications'|null>(null)
+  const topActionsRef=useRef<HTMLDivElement>(null)
+
+  useEffect(()=>{
+    if(logged&&!localStorage.getItem('kudo-tour-seen')){
+      setTourIndex(0)
+      navigate('/')
+    }
+  },[logged,navigate])
 
   useEffect(()=>{
     if(!token()) return
-    request<{transactions:Tx[]}>('/transactions').then(d=>setTx(d.transactions)).catch(()=>{})
+    const loadTransactions=async()=>{const all:Tx[]=[];let page=1;let pages=1;do{const d=await request<{transactions:Tx[],pagination:{pages:number}}>(`/transactions?page=${page}&limit=100`);all.push(...d.transactions);pages=d.pagination.pages;page+=1}while(page<=pages);setTx(all)}
+    loadTransactions().catch(()=>{})
     request<{goals:Goal[]}>('/goals').then(d=>setGoals(d.goals)).catch(()=>{})
     if(location.pathname==='/cuenta') request<{user:Profile}>('/auth/me').then(d=>{setUser(d.user);localStorage.setItem('kudo-user',JSON.stringify(d.user));localStorage.setItem('kudo-currency',d.user.currency||'GTQ')}).catch(()=>{})
   },[logged,location.pathname])
@@ -36,18 +58,32 @@ function App(){
     return()=>{window.removeEventListener('storage',syncProfile);window.removeEventListener('message',onAuthMessage)}
   },[])
 
+  useEffect(()=>{
+    const closeOutside=(event:PointerEvent)=>{if(event.target instanceof Node&&!topActionsRef.current?.contains(event.target))setHeaderMenu(null)}
+    const closeEscape=(event:KeyboardEvent)=>{if(event.key==='Escape')setHeaderMenu(null)}
+    document.addEventListener('pointerdown',closeOutside)
+    document.addEventListener('keydown',closeEscape)
+    return()=>{document.removeEventListener('pointerdown',closeOutside);document.removeEventListener('keydown',closeEscape)}
+  },[])
+
+  useEffect(()=>setHeaderMenu(null),[location.pathname])
+
   const addTx=async(item:Omit<Tx,'id'>)=>{const d=await request<{transaction:Tx}>('/transactions',{method:'POST',body:JSON.stringify(item)});setTx(v=>[d.transaction,...v])}
   const updateTx=async(id:string,item:Partial<Omit<Tx,'id'>>)=>{const d=await request<{transaction:Tx}>(`/transactions/${id}`,{method:'PATCH',body:JSON.stringify(item)});setTx(v=>v.map(t=>t.id===id?d.transaction:t));return d.transaction}
   const addGoal=async(name:string,target:number)=>{const d=await request<{goal:Goal}>('/goals',{method:'POST',body:JSON.stringify({name,target,deadline:new Date(Date.now()+180*864e5).toISOString()})});setGoals(v=>[d.goal,...v])}
   const contribute=async(id:string,amount:number)=>{const d=await request<{goal:Goal}>(`/goals/${id}/contributions`,{method:'POST',body:JSON.stringify({amount})});setGoals(v=>v.map(g=>g.id===id?d.goal:g))}
+  const startTour=()=>{setTourIndex(0);navigate('/')}
+  const closeTour=()=>{setTourIndex(null);localStorage.setItem('kudo-tour-seen','true')}
+  const changeTourStep=(index:number)=>{setTourIndex(index);navigate(tourSteps[index].path)}
 
   return <Routes>
-    <Route path="/login" element={<PrototypeFrame src="/prototypes/login.html" title="Inicio de sesión KUDO"/>}/>
+    <Route path="/login" element={<LoginPage onLogin={profile=>{setUser(profile);setLogged(true)}}/>}/>
+    <Route path="/reset-password" element={<LoginPage onLogin={profile=>{setUser(profile);setLogged(true)}}/>}/>
     <Route path="/*" element={logged?<div className={`shell ${menu?'menu-open':''}`}>
       <aside className={`sidebar ${menu?'open':''}`}>
         <div className="brand"><div className="brand-mark">k</div><span>KUDO<small>FINANZAS PERSONALES</small></span><button className="close-menu" onClick={()=>setMenu(false)}><X/></button></div>
         <div className="nav-label">MENÚ PRINCIPAL</div>
-        <nav>{nav.map(([to,label,Icon])=><NavLink end={to==='/'} onClick={()=>setMenu(false)} className={({isActive})=>`nav-link ${isActive?'active':''}`} to={to} key={to}><Icon size={19}/><span>{label}</span>{to==='/transaccion'&&<b className="nav-plus">+</b>}</NavLink>)}</nav>
+        <nav>{nav.map(([to,label,Icon],index)=><NavLink end={to==='/'} onClick={()=>setMenu(false)} className={({isActive})=>`nav-link ${isActive?'active':''}`} to={to} key={to} data-tour-nav={index}><Icon size={19}/><span>{label}</span>{to==='/transaccion'&&<b className="nav-plus">+</b>}</NavLink>)}</nav>
         <div className="sidebar-bottom"><div className="help-card"><Sparkles size={18}/><b>Un pequeño paso<br/>hace la diferencia.</b><span>Vas por buen camino ✨</span></div>
           <div className="user-row"><NavLink to="/cuenta" className="user-profile"><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>Mi cuenta</small></span></NavLink>
             <button className="logout-button" aria-label="Cerrar sesión" title="Cerrar sesión" onClick={()=>{localStorage.removeItem('kudo-token');localStorage.removeItem('kudo-user');localStorage.removeItem('kudo-currency');setUser(null);setLogged(false)}}><LogOut size={17}/></button>
@@ -55,20 +91,42 @@ function App(){
         </div>
       </aside>
       {menu&&<button className="scrim" onClick={()=>setMenu(false)}/>}
-      <main className="main"><header className="topbar"><button className="mobile-menu" onClick={()=>setMenu(true)}><Menu/></button><div className="crumb">Mi espacio <span>/</span> <b>{location.pathname==='/cuenta'?'Mi cuenta':nav.find(n=>n[0]===location.pathname)?.[1]||'Inicio'}</b></div><div className="top-actions"><button className="icon-btn notification" aria-label="Notificaciones"><Bell size={19}/><i/></button><NavLink to="/cuenta" className="profile-mini account-link" aria-label="Abrir mi cuenta"><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>Mi cuenta</small></span></NavLink></div></header>
+      <main className="main"><header className="topbar"><button className="mobile-menu" onClick={()=>setMenu(true)}><Menu/></button><div className="crumb">Mi espacio <span>/</span> <b>{location.pathname==='/cuenta'?'Mi cuenta':nav.find(n=>n[0]===location.pathname)?.[1]||'Inicio'}</b></div><div className="top-actions" ref={topActionsRef}>
+        <button className="icon-btn tour-launch" onClick={startTour} aria-label="Iniciar recorrido por KUDO" title="Recorrido por KUDO"><CircleHelp size={19}/></button>
+        <div className="header-action"><button type="button" className="icon-btn notification" aria-label="Notificaciones" aria-expanded={headerMenu==='notifications'} aria-controls="notifications-popover" onClick={()=>setHeaderMenu(current=>current==='notifications'?null:'notifications')}><Bell size={19}/><i/></button>
+          {headerMenu==='notifications'&&<section className="header-popover notifications-popover" id="notifications-popover" role="dialog" aria-label="Notificaciones"><div className="popover-heading"><div><b>Notificaciones</b><small>Actividad de tu cuenta</small></div><button type="button" aria-label="Cerrar notificaciones" onClick={()=>setHeaderMenu(null)}><X size={16}/></button></div>
+            {tx.length? <><div className="notification-items">{tx.slice(0,3).map(item=><div className="notification-item" key={item.id}><span className={`notification-mark ${item.type==='INCOME'?'income':''}`}>{item.type==='INCOME'?<ArrowDownRight size={15}/>:<ArrowUpRight size={15}/>}</span><span><b>{item.title}</b><small>{item.category} · {new Date(item.date).toLocaleDateString('es-GT',{day:'numeric',month:'short'})}</small></span><strong className={item.type==='INCOME'?'green':'amount'}>{item.type==='INCOME'?'+':'−'}{money(item.amount)}</strong></div>)}</div><NavLink className="popover-link" to="/movimientos" onClick={()=>setHeaderMenu(null)}>Ver movimientos</NavLink></>:<div className="popover-empty"><Bell size={20}/><b>Aún no hay actividad</b><span>Cuando registres un movimiento, aparecerá aquí.</span><NavLink to="/transaccion" onClick={()=>setHeaderMenu(null)}>Registrar movimiento</NavLink></div>}
+          </section>}
+        </div>
+        <div className="header-action"><button type="button" className="profile-mini account-link" aria-label="Abrir menú de perfil" aria-expanded={headerMenu==='profile'} aria-controls="profile-popover" onClick={()=>setHeaderMenu(current=>current==='profile'?null:'profile')}><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>Mi cuenta</small></span></button>
+          {headerMenu==='profile'&&<section className="header-popover profile-popover" id="profile-popover" role="menu" aria-label="Menú de perfil"><div className="profile-popover-user"><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>{user?.email||'Cuenta personal'}</small></span></div><NavLink role="menuitem" to="/cuenta" onClick={()=>setHeaderMenu(null)}><Wallet size={17}/>Mi cuenta</NavLink><button role="menuitem" type="button" onClick={()=>{setHeaderMenu(null);localStorage.removeItem('kudo-token');localStorage.removeItem('kudo-user');localStorage.removeItem('kudo-currency');setUser(null);setLogged(false)}}><LogOut size={17}/>Cerrar sesión</button></section>}
+        </div>
+      </div></header>
         <div className="content"><Routes>
-          <Route path="/" element={<PrototypeFrame src="/prototypes/dashboard.html" title="Dashboard KUDO"/>}/>
-          <Route path="/finanzas" element={<PrototypeFrame src="/prototypes/presupuestos.html" title="Presupuestos KUDO"/>}/>
+          <Route path="/" element={<DashboardPage transactions={tx} goals={goals} name={user?.name||'ahí'} currencyCode={user?.currency||currencyCode()}/>}/>
+          <Route path="/finanzas" element={<FinancePage transactions={tx} currencyCode={user?.currency||currencyCode()}/>}/>
           <Route path="/transaccion" element={<NewTransaction addTx={addTx}/>}/>
           <Route path="/movimientos" element={<Finances tx={tx} updateTx={updateTx}/>}/>
           <Route path="/metas" element={<Goals goals={goals} addGoal={addGoal} contribute={id=>contribute(id,100)}/>}/>
           <Route path="/cuenta" element={<Account user={user} onSave={async(profile)=>{const d=await request<{user:Profile}>('/auth/me',{method:'PATCH',body:JSON.stringify(profile)});setUser(d.user);localStorage.setItem('kudo-user',JSON.stringify(d.user));return d.user}}/>}/>
-          <Route path="/kudo-ai" element={<KudoAI tx={tx} name={user?.name?.trim().split(/\s+/)[0]||'ahí'}/>}/>
+          <Route path="/kudo-ai" element={<KudoAI tx={tx} name={user?.name?.trim().split(/\s+/)[0]||'ahí'} currencyCode={user?.currency||currencyCode()}/>}/>
         </Routes></div><footer>Una plataforma para ayudarte a registrar tus gastos</footer>
       </main>
       <NavLink to="/transaccion" className="global-fab" aria-label="Registrar nuevo movimiento" title="Registrar nuevo movimiento"><Plus size={21}/><span>Nuevo movimiento</span></NavLink>
+      <NavLink to="/kudo-ai" className="agent-fab" aria-label="Abrir Kudo AI" title="Hablar con Kudo AI"><Sparkles size={20}/></NavLink>
+      {tourIndex!==null&&<ProductTour step={tourIndex} onClose={closeTour} onNext={()=>tourIndex<tourSteps.length-1?changeTourStep(tourIndex+1):closeTour()} onBack={()=>changeTourStep(Math.max(0,tourIndex-1))}/>}
     </div>:<Navigate to="/login" replace/>}/>
   </Routes>
+}
+
+function ProductTour({step,onClose,onNext,onBack}:{step:number;onClose:()=>void;onNext:()=>void;onBack:()=>void}){
+  const current=tourSteps[step]
+  return <div className="tour-backdrop"><section className="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <div className="tour-card-top"><span>RECORRIDO KUDO · {step+1} DE {tourSteps.length}</span><button type="button" onClick={onClose} aria-label="Cerrar recorrido"><X size={18}/></button></div>
+    <div className="tour-progress"><i style={{width:`${((step+1)/tourSteps.length)*100}%`}}/></div>
+    <span className="tour-symbol"><Sparkles size={20}/></span><h2 id="tour-title">{current.title}</h2><p>{current.description}</p>
+    <div className="tour-actions"><button type="button" className="tour-skip" onClick={onClose}>Saltar recorrido</button><div><button type="button" className="tour-back" onClick={onBack} disabled={step===0}>Atrás</button><button type="button" className="tour-next" onClick={onNext}>{step===tourSteps.length-1?'Terminar':'Siguiente'}</button></div></div>
+  </section></div>
 }
 
 function PageTitle({eyebrow,title,sub,action}:{eyebrow:string,title:string,sub:string,action?:React.ReactNode}){return <div className="page-title"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{sub}</p></div>{action}</div>}
@@ -202,36 +260,6 @@ function NewTransaction({addTx}:{addTx:(t:Omit<Tx,'id'>)=>Promise<void>}){
       <button className="contribute" disabled={busy||progress>=100} onClick={()=>addContribution(g.id)}><Plus size={15}/> Agregar Q 100</button>
     </article>})}</div>:<section className="goal-empty"><div className="goal-empty-icon"><Sparkles size={23}/></div><h2>Tu primera meta empieza aquí</h2><p>Escribe algo que quieras lograr y el monto. KUDO te ayudará a visualizar tu avance.</p></section>}
   </div>
-}function KudoAI({tx,name}:{tx:Tx[],name:string}) {
-  const [messages,setMessages]=useState<{role:'ai'|'user';text:string}[]>([{role:'ai',text:`¡Hola, ${name}! 👋 Soy Kudo AI. Puedo analizar tus movimientos y ayudarte con ahorro, gastos, saldo o metas.`}]);
-  const [input,setInput]=useState('');
-  const answer=(question:string)=>{
-    const q=question.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-    const now=new Date();
-    const monthTx=tx.filter(t=>{const d=new Date(t.date);return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()});
-    const income=monthTx.filter(t=>t.type==='INCOME').reduce((sum,t)=>sum+t.amount,0);
-    const expenses=monthTx.filter(t=>t.type==='EXPENSE').reduce((sum,t)=>sum+t.amount,0);
-    const balance=income-expenses;
-    const byCategory=monthTx.filter(t=>t.type==='EXPENSE').reduce<Record<string,number>>((acc,t)=>{acc[t.category]=(acc[t.category]||0)+t.amount;return acc},{});
-    const ranked=Object.entries(byCategory).sort((a,b)=>b[1]-a[1]);
-    const top=ranked[0];
-    const categoryQuery=Object.keys(byCategory).find(category=>q.includes(category.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()));
-    const focus: [string,number] | undefined = categoryQuery ? [categoryQuery,byCategory[categoryQuery]] : top;
-    if(monthTx.length===0) return 'Aún no hay movimientos registrados este mes para hacer un análisis personalizado. Registra tus ingresos y gastos y luego pregúntame por tu saldo, tus categorías o un plan de ahorro.';
-    if(/viaj|vacacion|meta|objetivo/.test(q)) return `Sobre tu viaje: este mes tienes ${money(income)} en ingresos registrados y ${money(expenses)} en gastos, para un saldo neto registrado de ${money(balance)}. Para calcular un plan realista, dime cuánto cuesta el viaje y cuándo necesitas tener ese dinero.`;
-    if(/ahorr|guardar|apartar/.test(q)) {
-      if(top) { const suggested=top[1]*0.1; return `Este mes llevas ${money(expenses)} en gastos. Tu categoría más alta es ${top[0]} con ${money(top[1])}. Una meta inicial sería reducirla 10% y apartar ${money(suggested)} este mes. Si me dices cuánto quieres ahorrar y para cuándo, calculo el ritmo semanal.`; }
-      return `Tu saldo neto registrado este mes es ${money(balance)}. Puedes empezar apartando una cantidad fija cada semana. Dime cuánto quieres ahorrar y la fecha objetivo para armar un plan.`;
-    }
-    if(/ingres|saldo|balance|disponible/.test(q)) return `Este mes registras ${money(income)} en ingresos y ${money(expenses)} en gastos. La diferencia entre esos movimientos es ${money(balance)}. Es el saldo de lo que has registrado aquí, no necesariamente el saldo de tu cuenta bancaria.`;
-    if(/categoria|gast|analiz|donde|presupuest|limite|cuanto|comida|transporte|compras|hogar|salud|viajes|ocio/.test(q)) {
-      if(!focus) return `Este mes registras ${money(expenses)} en gastos. Aún no hay categorías suficientes para comparar; al registrar más movimientos podré señalar dónde se concentra el gasto.`;
-      const percent=expenses>0?Math.round(focus[1]/expenses*100):0;
-      const qualifier=categoryQuery?`En ${focus[0]} llevas ${money(focus[1])} (${percent}% de tus gastos).`:`Tu categoría con más gasto es ${focus[0]}: ${money(focus[1])} (${percent}%).`;
-      return `Este mes registras ${money(expenses)} en gastos. ${qualifier} Un límite de ${money(focus[1]*0.9)} para el próximo mes te permitiría reducir esa categoría alrededor de 10%.`;
-    }    return `Leí tu pregunta: “${question}”. Este mes llevas ${money(income)} en ingresos y ${money(expenses)} en gastos. Puedo analizar tu saldo, tus categorías de gasto o ayudarte a calcular una meta de ahorro.`;
-  };
-  const send=(e:FormEvent)=>{e.preventDefault();const q=input.trim();if(!q)return;setMessages(v=>[...v,{role:'user',text:q},{role:'ai',text:answer(q)}]);setInput('')};
-  return <><PageTitle eyebrow="TU COMPAÑERO FINANCIERO" title="Kudo AI ✨" sub="Ideas claras para sentirte bien con tu dinero."/><div className="privacy-note" role="note">🔒 Protegemos tus datos y cuidamos tu privacidad.</div><div className="ai-layout"><section className="panel chat-panel"><div className="chat-head"><div className="spark-badge"><Sparkles size={19}/></div><div><b>Tu espacio con Kudo</b><small><i/> Analiza tus movimientos registrados</small></div></div><div className="chat-messages">{messages.map((m,i)=><div className={`message ${m.role}`} key={i}><div className="message-avatar">{m.role==='ai'?'✦':name.charAt(0).toUpperCase()}</div><p>{m.text}</p></div>)}</div><div className="suggestions">{['Analiza mis gastos','¿Cómo puedo ahorrar?','¿Cuál es mi saldo?'].map(s=><button onClick={()=>setInput(s)} key={s}>{s}</button>)}</div><form className="chat-input" onSubmit={send}><input placeholder="Escribe tu pregunta..." value={input} onChange={e=>setInput(e.target.value)}/><button aria-label="Enviar"><Send size={17}/></button></form><small className="ai-disclaimer">Kudo AI ofrece orientación general basada en tus movimientos registrados. No reemplaza asesoría financiera profesional.</small></section><aside className="ai-side"><div className="panel ai-side-card"><span className="insight-label">TUS MOVIMIENTOS REGISTRADOS</span><h3>Respuestas basadas en tus datos</h3><p>El análisis considera tus movimientos del mes actual. Registra ingresos y gastos para obtener recomendaciones más útiles.</p><div className="ai-meter"><span>Movimientos este mes</span><b>{tx.filter(t=>{const d=new Date(t.date),n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()}).length}</b><div><i style={{width:`${Math.min(100,tx.length?100:0)}%`}}/></div></div></div></aside></div></>}
+}
 
 export default App

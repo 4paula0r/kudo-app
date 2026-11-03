@@ -5,11 +5,13 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { createHash, randomBytes } from 'node:crypto'
 import { Prisma, PrismaClient, TxType } from '@prisma/client'
 import { z } from 'zod'
 
 const app = express()
 const db = new PrismaClient()
+const passwordResetTokens = new Map<string, { userId: string; expiresAt: number }>()
 const port = Number(process.env.PORT || 4000)
 const secret = process.env.JWT_SECRET
 
@@ -48,6 +50,8 @@ const credentials = z.object({
   email: z.string().trim().email().max(200),
   password: z.string().min(8, 'La contraseña debe contener mínimo 8 caracteres.').max(100),
 })
+const resetRequest = z.object({ email: z.string().trim().email().max(200) })
+const resetPasswordInput = z.object({ token: z.string().min(32).max(200), password: z.string().min(8, 'La contraseña debe contener mínimo 8 caracteres.').max(100) })
 const transactionSchema = z.object({
   title: z.string().trim().min(1).max(100),
   category: z.string().trim().min(1).max(40),
@@ -66,6 +70,12 @@ const contributionSchema = z.object({
   note: z.string().trim().max(120).optional(),
   date: z.string().datetime().optional(),
 })
+const budgetInput = z.object({
+  category: z.string().trim().min(1).max(40),
+  monthlyLimit: z.number().positive().max(999999999),
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'El período debe tener formato AAAA-MM.'),
+})
+const budgetMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'El período debe tener formato AAAA-MM.')
 
 const transactionJson = <T extends { amount: Prisma.Decimal | number }>(item: T) => ({ ...item, amount: Number(item.amount) })
 const goalJson = <T extends { target: Prisma.Decimal | number; saved: Prisma.Decimal | number }>(item: T) => ({
@@ -88,6 +98,41 @@ app.post('/api/auth/login', route(async (req, res) => {
   const user = await db.user.findUnique({ where: { email: d.email.toLowerCase() } })
   if (!user || !await bcrypt.compare(d.password, user.passwordHash)) return res.status(401).json({ message: 'Correo o contraseña incorrectos.' })
   return res.json({ token: jwt.sign({}, secret!, { subject: user.id, expiresIn: '7d' }), user: { id: user.id, name: user.name, email: user.email, age: user.age, currency: user.currency, expenseCategories: user.expenseCategories } })
+}))
+
+app.post('/api/auth/forgot-password', route(async (req, res) => {
+  const { email } = resetRequest.parse(req.body)
+  const genericMessage = 'Si existe una cuenta con ese correo, se preparó un enlace para restablecer la contraseña.'
+  if (process.env.NODE_ENV === 'production') return res.status(503).json({ message: 'La recuperación por correo aún no está configurada. Contacta al administrador de KUDO.' })
+
+  const user = await db.user.findUnique({ where: { email: email.toLowerCase() }, select: { id: true } })
+  if (!user) return res.json({ message: genericMessage })
+
+  const rawToken = randomBytes(32).toString('base64url')
+  const tokenHash = createHash('sha256').update(rawToken).digest('hex')
+  for (const [existingHash, entry] of passwordResetTokens) {
+    if (entry.userId === user.id || entry.expiresAt <= Date.now()) passwordResetTokens.delete(existingHash)
+  }
+  passwordResetTokens.set(tokenHash, { userId: user.id, expiresAt: Date.now() + 15 * 60 * 1000 })
+  const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+  const resetUrl = `${clientOrigin}/reset-password?token=${encodeURIComponent(rawToken)}`
+  return res.json({ message: genericMessage, resetUrl })
+}))
+
+app.post('/api/auth/reset-password', route(async (req, res) => {
+  const { token, password } = resetPasswordInput.parse(req.body)
+  const tokenHash = createHash('sha256').update(token).digest('hex')
+  const reset = passwordResetTokens.get(tokenHash)
+  if (!reset || reset.expiresAt <= Date.now()) {
+    passwordResetTokens.delete(tokenHash)
+    return res.status(400).json({ message: 'El enlace venció o ya se utilizó. Solicita uno nuevo.' })
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12)
+  passwordResetTokens.delete(tokenHash)
+  for (const [existingHash, entry] of passwordResetTokens) if (entry.userId === reset.userId) passwordResetTokens.delete(existingHash)
+  await db.user.update({ where: { id: reset.userId }, data: { passwordHash } })
+  return res.json({ message: 'Tu contraseña se actualizó. Ya puedes iniciar sesión.' })
 }))
 
 app.get('/api/auth/me', auth, route(async (req, res) => {
@@ -197,6 +242,51 @@ app.post('/api/goals/:id/contributions', auth, route(async (req, res) => {
   return res.status(201).json({ contribution: { ...result.contribution, amount: Number(result.contribution.amount) }, goal: goalJson(result.goal) })
 }))
 
+app.get('/api/budgets', auth, route(async (req, res) => {
+  const month = budgetMonth.parse(req.query.month || new Date().toISOString().slice(0, 7))
+  const start = new Date(`${month}-01T00:00:00.000Z`)
+  const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 1))
+  const budgets = await db.budget.findMany({ where: { userId: req.userId, month: start }, orderBy: { category: 'asc' } })
+  const spent = await db.transaction.groupBy({
+    by: ['category'],
+    where: { userId: req.userId, type: TxType.EXPENSE, date: { gte: start, lt: end } },
+    _sum: { amount: true },
+  })
+  const spentByCategory = new Map(spent.map(item => [item.category, Number(item._sum.amount || 0)]))
+  return res.json({ month, budgets: budgets.map(item => {
+    const amountSpent = spentByCategory.get(item.category) || 0
+    const monthlyLimit = Number(item.monthlyLimit)
+    return { id: item.id, category: item.category, monthlyLimit, amountSpent, remaining: monthlyLimit - amountSpent, percent: monthlyLimit ? Math.round(amountSpent / monthlyLimit * 100) : 0, month: item.month }
+  }) })
+}))
+
+app.post('/api/budgets', auth, route(async (req, res) => {
+  const d = budgetInput.parse(req.body)
+  const month = new Date(`${d.month}-01T00:00:00.000Z`)
+  const budget = await db.budget.upsert({
+    where: { userId_category_month: { userId: req.userId!, category: d.category, month } },
+    create: { userId: req.userId!, category: d.category, monthlyLimit: d.monthlyLimit, month },
+    update: { monthlyLimit: d.monthlyLimit },
+  })
+  return res.status(201).json({ budget: { ...budget, monthlyLimit: Number(budget.monthlyLimit) } })
+}))
+
+app.patch('/api/budgets/:id', auth, route(async (req, res) => {
+  const id = z.string().min(1).parse(req.params.id)
+  const d = z.object({ monthlyLimit: z.number().positive().max(999999999) }).parse(req.body)
+  const result = await db.budget.updateMany({ where: { id, userId: req.userId }, data: { monthlyLimit: d.monthlyLimit } })
+  if (!result.count) return res.status(404).json({ message: 'No se encontró el presupuesto.' })
+  const budget = await db.budget.findFirst({ where: { id, userId: req.userId } })
+  return res.json({ budget: { ...budget!, monthlyLimit: Number(budget!.monthlyLimit) } })
+}))
+
+app.delete('/api/budgets/:id', auth, route(async (req, res) => {
+  const id = z.string().min(1).parse(req.params.id)
+  const result = await db.budget.deleteMany({ where: { id, userId: req.userId } })
+  if (!result.count) return res.status(404).json({ message: 'No se encontró el presupuesto.' })
+  return res.status(204).end()
+}))
+
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof z.ZodError) return res.status(400).json({ message: err.issues[0]?.message || 'Revisa los datos ingresados.', code: 'VALIDATION_ERROR' })
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -207,8 +297,14 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   return res.status(500).json({ message: 'Ocurrió un error interno. Intenta de nuevo.', code: 'INTERNAL_ERROR' })
 })
 
-const server = app.listen(port, () => console.log(`KUDO API disponible en http://localhost:${port}`))
+export { app, db }
+const server = process.env.NODE_ENV === 'test' ? null : app.listen(port, () => console.log(`KUDO API disponible en http://localhost:${port}`))
 async function shutdown() {
+  if (!server) {
+    await db.$disconnect()
+    process.exit(0)
+    return
+  }
   server.close(async () => {
     await db.$disconnect()
     process.exit(0)
