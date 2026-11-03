@@ -1,4 +1,21 @@
 .live-dashboard,.finance-page{width:min(1040px,100%);margin:0 auto}
+.live-dashboard-simple{width:min(760px,100%)}
+.live-dashboard-simple .live-dashboard-heading{margin-bottom:16px}
+.live-dashboard-simple .live-dashboard-heading h1{margin:0;font-size:25px}
+.live-balance-simple{min-height:148px;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:24px 28px}
+.live-balance-simple>span{display:flex;align-items:center;gap:8px;color:#d5dbe2;font-size:12px}
+.live-balance-simple>b{font-size:34px;line-height:1.1;margin:0}
+.live-recent-simple{margin-top:16px}
+.ai-layout-single{grid-template-columns:minmax(0,1fr)}
+.tour-launch{color:#7254c5}
+.tour-backdrop{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:18px;background:#17142678;backdrop-filter:blur(3px)}
+.tour-card{width:min(420px,100%);padding:23px;border:1px solid #eee9f5;border-radius:18px;background:#fff;box-shadow:0 22px 70px #19132d40}
+.tour-card-top{display:flex;align-items:center;justify-content:space-between;color:#8f83aa;font-size:9px;font-weight:700;letter-spacing:.13em}
+.tour-card-top button{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:9px;background:#f6f3fa;color:#766d86}
+.tour-progress{height:4px;margin:12px 0 21px;border-radius:5px;background:#f0edf4;overflow:hidden}.tour-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7555d9,#53bb98);transition:width .2s}
+.tour-symbol{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#f0ebfd;color:#7555d9}
+.tour-card h2{margin:14px 0 7px;font:700 21px Manrope;color:#302c43}.tour-card>p{min-height:42px;margin:0;color:#777183;font-size:12px;line-height:1.6}
+.tour-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:23px}.tour-actions>div{display:flex;gap:8px}.tour-actions button{min-height:37px;padding:0 13px;border-radius:9px;font-size:10px;font-weight:600}.tour-skip,.tour-back{border:1px solid #e8e4ef;background:#fff;color:#777183}.tour-next{border:0;background:#7555d9;color:white}.tour-back:disabled{opacity:.45;cursor:default}
 .live-dashboard-heading,.finance-page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}
 .live-dashboard-heading h1,.finance-page-heading h1{font:700 27px Manrope,sans-serif;letter-spacing:-.04em;color:#302c43;margin:7px 0 5px}
 .live-dashboard-heading p,.finance-page-heading p{margin:0;color:#928da0;font-size:12px}
