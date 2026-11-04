@@ -2,6 +2,17 @@
   "name": "kudo-finanzas",
   "private": true,
   "version": "1.0.0",
-  "scripts": {"dev": "concurrently -k \"npm:dev:api\" \"npm:dev:web\"", "dev:web": "npm --prefix frontend run dev", "dev:api": "npm --prefix backend run dev", "build": "npm --prefix frontend run build && npm --prefix backend run build", "test": "npm --prefix backend test", "db:generate": "npm --prefix backend run db:generate", "db:migrate": "npm --prefix backend run db:migrate"},
-  "devDependencies": {"concurrently": "^9.2.1"}
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:web": "npm --prefix frontend run dev",
+    "dev:api": "npm --prefix backend run dev",
+    "build": "npm --prefix frontend run build && npm --prefix backend run build",
+    "test": "npm --prefix backend test",
+    "db:generate": "npm --prefix backend run db:generate",
+    "db:migrate": "npm --prefix backend run db:migrate",
+    "test:e2e": "npm --prefix frontend run test:e2e"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

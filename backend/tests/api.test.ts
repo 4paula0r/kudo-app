@@ -1,8 +1,14 @@
 import { after, before, test } from 'node:test'
+import { randomBytes } from 'node:crypto'
 import assert from 'node:assert/strict'
 
 process.env.NODE_ENV = 'test'
-process.env.JWT_SECRET ||= 'kudo-integration-test-secret-at-least-32-chars'
+process.env.JWT_SECRET ||= randomBytes(32).toString('hex')
+
+const configuredDatabase = process.env.DATABASE_URL
+if (!configuredDatabase) throw new Error('Define DATABASE_URL para una base de pruebas kudo_test antes de ejecutar npm test.')
+const testDatabaseName = new URL(configuredDatabase).pathname.replace(/^\/+/, '')
+if (testDatabaseName !== 'kudo_test') throw new Error(`npm test solo puede ejecutarse contra kudo_test; la base configurada es "${testDatabaseName}".`)
 
 const { app, db } = await import('../src/index.js')
 const server = app.listen(0)

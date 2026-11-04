@@ -1,0 +1,130 @@
+/* Inicio KUDO 2.0: reglas limitadas al Dashboard y a su variante de sidebar. */
+.dashboard-shell{--electric-blue:#245bff;--night-blue:#101b35;--ice-blue:#dce6ff;--dashboard-bg:#f6f8fc;--mint:#21b89a;--dashboard-ink:#101b35;background:var(--dashboard-bg)}
+.dashboard-shell .sidebar{overflow:hidden;background:#fff;border-right-color:#e8eef9}
+.dashboard-shell .sidebar::after{position:absolute;right:-30px;bottom:0;left:-30px;height:205px;content:"";pointer-events:none;background:radial-gradient(110% 82% at 8% 100%,#bcd4ffab 0 38%,transparent 39%),radial-gradient(100% 90% at 79% 115%,#dce8ff 0 48%,transparent 49%);z-index:0}
+.dashboard-shell .sidebar>*{position:relative;z-index:1}
+.dashboard-shell .brand{gap:13px;color:var(--night-blue);letter-spacing:0}
+.dashboard-shell .brand-mark{width:48px;height:48px;flex:none;background:#0872f5 url('/prototypes/images/kudo/kudo-logo-icon.png') center/cover no-repeat;box-shadow:0 5px 15px #245bff35;color:transparent;font-size:0}
+.dashboard-shell .brand>span{font-size:0;letter-spacing:0}
+.dashboard-shell .brand>span::before{content:"kudo.";font:800 25px Manrope,sans-serif;letter-spacing:-.055em;color:var(--night-blue)}
+.dashboard-shell .brand small{display:none}
+.dashboard-shell .nav-label{color:#8391aa}
+.dashboard-shell .nav-link{color:#17284b;border-radius:13px;font-weight:600}
+.dashboard-shell .nav-link svg{color:#17284b}
+.dashboard-shell .nav-link:hover{background:#eef3ff;color:var(--electric-blue)}
+.dashboard-shell .nav-link.active{background:linear-gradient(105deg,#0878ff,#245bff);color:#fff;box-shadow:0 7px 16px #245bff32}
+.dashboard-shell .nav-link.active svg{color:#fff}
+.dashboard-shell .nav-plus{background:var(--electric-blue)}
+.dashboard-shell .help-card{display:none}
+.dashboard-shell .user-row{border-color:#e4eaf5;color:#17284b}
+.dashboard-shell .user-row b{color:var(--night-blue)}
+.dashboard-shell .main{position:relative;margin-left:246px;background:var(--dashboard-bg)}
+.dashboard-shell .topbar{position:relative;height:0;flex:none;padding:0;border:0;background:transparent;z-index:10}
+.dashboard-shell .crumb{display:none}
+.dashboard-shell .top-actions{position:absolute;top:17px;right:clamp(20px,3.3vw,48px);height:42px;gap:18px}
+.dashboard-shell .top-actions .icon-btn{color:#14274f}
+.dashboard-shell .top-actions .avatar{background:#dce8ff;color:#102043}
+.dashboard-shell .profile-mini b{color:var(--night-blue)}
+.dashboard-shell .profile-mini small{color:#73819a}
+.dashboard-shell .dashboard-content{width:min(1440px,100%);max-width:none;margin:0 auto;padding:35px clamp(24px,3.5vw,52px) 42px}
+.dashboard-shell .main>footer{display:none}
+.dashboard-shell .global-fab{background:var(--electric-blue);box-shadow:0 9px 24px #245bff42}
+.dashboard-shell .global-fab:hover{background:#1648df}
+.dashboard-shell .agent-fab{color:var(--electric-blue);border-color:#d9e5ff}
+
+.live-dashboard.kudo-dashboard-v2{--dashboard-chart-1:#245bff;--dashboard-chart-2:#21b89a;--dashboard-chart-3:#80b5ff;--dashboard-chart-4:#c1cad9;--kudo-chart-1:#245bff;--kudo-chart-2:#21b89a;--kudo-chart-3:#80b5ff;--kudo-chart-4:#c1cad9;width:min(1320px,100%);max-width:none;margin:0 auto;display:flex;flex-direction:column;gap:19px;color:var(--dashboard-ink)}
+.kudo-dashboard-v2 .live-dashboard-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 1px;padding:0 3px}
+.kudo-dashboard-v2 .live-dashboard-heading h1{margin:0 0 5px;color:var(--night-blue);font:800 clamp(25px,2.5vw,34px) Manrope,sans-serif;letter-spacing:-.055em}
+.kudo-dashboard-v2 .live-dashboard-heading p{margin:0;color:#596987;font-size:13px}
+.kudo-dashboard-v2 .dashboard-month-picker{border-color:#e3eafa;border-radius:12px;background:#fff;box-shadow:0 5px 14px #10264b0b}
+.kudo-dashboard-v2 .dashboard-month-picker>button:hover:not(:disabled){background:#edf3ff;color:var(--electric-blue)}
+.kudo-dashboard-v2 .dashboard-month-picker>label{color:#526582}
+.kudo-dashboard-v2 .dashboard-month-picker input{color:var(--night-blue);font-weight:650}
+.kudo-dashboard-v2 .kudo-overview-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.9fr);align-items:stretch;gap:18px}
+.kudo-dashboard-v2 .panel{border:1px solid #e5ebf5;border-radius:22px;background:#fff;box-shadow:0 10px 26px #10264b0c}
+.kudo-dashboard-v2 .kudo-hero{position:relative;display:flex;min-height:278px!important;align-items:center;overflow:hidden;padding:26px 30px!important;border:0!important;border-radius:24px!important;background:radial-gradient(ellipse at 79% 27%,#1d3d77 0%,#142b58 32%,#101b35 76%)!important;color:#fff!important;box-shadow:0 15px 32px #101b3525!important}
+.kudo-dashboard-v2 .kudo-hero::before{position:absolute;right:9%;top:13%;width:220px;height:220px;border:1px solid #8db7ff21;border-radius:50%;content:"";box-shadow:0 0 0 20px #8db7ff0a,0 0 0 42px #8db7ff07;pointer-events:none}
+.kudo-dashboard-v2 .kudo-hero-top{position:relative;z-index:1;display:flex;width:100%;min-height:220px;align-items:center;justify-content:space-between;gap:20px}
+.kudo-dashboard-v2 .kudo-hero-copy{display:flex;max-width:58%;flex-direction:column;align-items:flex-start;gap:10px}
+.kudo-dashboard-v2 .kudo-hero-copy>span:first-child{color:#dfe9ff;font-size:clamp(14px,1.3vw,18px);font-weight:600}
+.kudo-dashboard-v2 .kudo-hero-copy strong{color:#fff;font:800 clamp(32px,4vw,54px)/1.05 Manrope,sans-serif;letter-spacing:-.055em}
+.kudo-dashboard-v2 .kudo-hero-copy small{display:flex;align-items:center;gap:7px;padding:0;background:transparent;color:#cbd8f0;font-size:11px;font-weight:500}
+.kudo-dashboard-v2 .dashboard-variation{display:flex;align-items:center;gap:7px;border:0;border-radius:999px;background:#d9fff2;color:#087c64;padding:9px 14px;font-size:13px;font-weight:750}
+.kudo-dashboard-v2 .dashboard-variation.down{background:#ffebe8;color:#b64a45}
+.kudo-dashboard-v2 .dashboard-variation.down svg{transform:rotate(90deg)}
+.kudo-dashboard-v2 .dashboard-owl-frame{position:relative;display:flex;width:41%;max-width:320px;min-width:190px;align-items:center;justify-content:center;overflow:hidden;border:1px solid #e3edff55;border-radius:24px;background:#fff;box-shadow:0 12px 32px #030b1d45}
+.kudo-dashboard-v2 .mascot-dashboard-hero{display:block;width:100%;height:auto;max-height:210px;object-fit:contain;filter:drop-shadow(0 8px 14px #07152e24)}
+.kudo-dashboard-v2 .kudo-month-summary{display:flex;min-height:278px;flex-direction:column;justify-content:center;padding:20px 25px!important;border-color:#e4eaf5!important;border-radius:22px!important;background:#fff!important}
+.kudo-dashboard-v2 .dashboard-month-heading{display:flex;align-items:center;justify-content:space-between;margin:0 0 5px;color:var(--electric-blue)}
+.kudo-dashboard-v2 .dashboard-month-heading>div>span{color:#73829d;font-size:9px;font-weight:800;letter-spacing:.16em}
+.kudo-dashboard-v2 .dashboard-month-heading h2{margin:4px 0 5px;color:var(--night-blue);font:750 21px Manrope,sans-serif;text-transform:capitalize}
+.kudo-dashboard-v2 .dashboard-month-row{display:grid;grid-template-columns:42px minmax(70px,1fr) auto;align-items:center;gap:11px;min-height:62px;border-top:1px solid #e8edf6;color:#263757;font-size:14px}
+.kudo-dashboard-v2 .dashboard-month-icon{display:grid;width:38px;height:38px;place-items:center;border-radius:50%;background:#e7f8f3;color:var(--mint)}
+.kudo-dashboard-v2 .dashboard-month-row b{color:var(--night-blue);font:750 clamp(13px,1.3vw,17px) Manrope,sans-serif;white-space:nowrap}
+.kudo-dashboard-v2 .dashboard-month-row.expense .dashboard-month-icon{background:#fff0ed;color:#ed625a}
+.kudo-dashboard-v2 .dashboard-month-row.savings .dashboard-month-icon{background:#e9f0ff;color:var(--electric-blue)}
+.kudo-dashboard-v2 .kudo-bottom-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.kudo-dashboard-v2 .kudo-category-card,.kudo-dashboard-v2 .kudo-recent-card{min-height:320px!important;padding:23px 25px!important;border-radius:22px!important}
+.kudo-dashboard-v2 .kudo-category-card .panel-heading h2,.kudo-dashboard-v2 .kudo-recent-card .panel-heading h2{margin:0;color:var(--night-blue);font:750 clamp(17px,1.6vw,22px) Manrope,sans-serif}
+.kudo-dashboard-v2 .kudo-category-card .panel-heading p{margin-top:5px;color:#7887a1;font-size:10px}
+.kudo-dashboard-v2 .kudo-category-content{display:flex;align-items:center;justify-content:center;gap:clamp(20px,3vw,40px);margin-top:25px}
+.kudo-dashboard-v2 .kudo-donut{display:grid;width:clamp(150px,14vw,194px);height:clamp(150px,14vw,194px);flex:0 0 auto;place-items:center;border-radius:50%;position:relative}
+.kudo-dashboard-v2 .kudo-donut::before{position:absolute;inset:18%;border-radius:50%;background:#fff;content:""}
+.kudo-dashboard-v2 .kudo-donut>div{z-index:1;display:grid;justify-items:center;gap:4px;text-align:center}
+.kudo-dashboard-v2 .kudo-donut b{color:var(--night-blue);font:750 clamp(13px,1.25vw,17px) Manrope,sans-serif}
+.kudo-dashboard-v2 .kudo-donut small{color:#70809a;font-size:10px;text-transform:capitalize}
+.kudo-dashboard-v2 .kudo-category-legend{display:flex;min-width:155px;flex:1;flex-direction:column;gap:16px}
+.kudo-dashboard-v2 .kudo-category-legend>div{display:flex;align-items:center;gap:10px;color:#233453;font-size:12px}
+.kudo-dashboard-v2 .kudo-category-legend i{width:11px;height:11px;border-radius:50%;flex:none}
+.kudo-dashboard-v2 .kudo-category-legend b{margin-left:auto;color:var(--night-blue);font-size:12px}
+.kudo-dashboard-v2 .kudo-recent-card .panel-heading{margin-bottom:11px}
+.kudo-dashboard-v2 .kudo-recent-card .panel-heading .text-link{color:var(--electric-blue);font-size:12px}
+.kudo-dashboard-v2 .kudo-recent-card .live-recent-list{margin-top:0}
+.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article{grid-template-columns:54px minmax(0,1fr) auto;min-height:79px;gap:13px;padding:12px 0;border-color:#e8edf6}
+.kudo-dashboard-v2 .kudo-recent-card .live-type-icon{width:48px;height:48px;border-radius:15px;background:#e9f0ff;color:var(--electric-blue)}
+.kudo-dashboard-v2 .kudo-recent-card .live-type-icon.income{background:#e5f8f1;color:#149d7d}
+.kudo-dashboard-v2 .kudo-recent-card .live-type-icon svg{width:22px;height:22px}
+.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article>div b{color:var(--night-blue);font-size:13px}
+.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article>div small{color:#71809a;font-size:10px}
+.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article>strong{color:#172747;font-size:13px}
+.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article>strong.green{color:#07896b}
+.kudo-dashboard-v2 .live-empty{padding:34px 16px;color:#6f7f98}
+.kudo-dashboard-v2 .live-empty .mascot-sleep{display:none}
+.kudo-dashboard-v2 .live-empty .primary-btn{background:var(--electric-blue)}
+
+@media(max-width:1050px){.kudo-dashboard-v2 .kudo-overview-grid{grid-template-columns:minmax(0,1.35fr) minmax(265px,.9fr);gap:14px}.kudo-dashboard-v2 .kudo-bottom-grid{gap:14px}.kudo-dashboard-v2 .kudo-category-content{gap:15px}.kudo-dashboard-v2 .kudo-donut{width:145px;height:145px}}
+@media(max-width:800px){.kudo-dashboard-v2 .kudo-overview-grid,.kudo-dashboard-v2 .kudo-bottom-grid{grid-template-columns:1fr}.kudo-dashboard-v2 .kudo-hero,.kudo-dashboard-v2 .kudo-month-summary{min-height:230px!important}.kudo-dashboard-v2 .kudo-hero-top{min-height:180px}.kudo-dashboard-v2 .kudo-month-summary{padding:18px 22px!important}.kudo-dashboard-v2 .kudo-category-card,.kudo-dashboard-v2 .kudo-recent-card{min-height:250px!important}}
+@media(max-width:700px){.dashboard-shell .main{margin-left:0}.dashboard-shell .topbar{height:0;padding:0}.dashboard-shell .top-actions{top:11px;right:15px;gap:10px}.dashboard-shell .profile-mini span{display:none}.dashboard-shell .dashboard-content{padding:24px 16px 32px}.live-dashboard.kudo-dashboard-v2{gap:14px}.kudo-dashboard-v2 .live-dashboard-heading{align-items:flex-start;gap:10px}.kudo-dashboard-v2 .live-dashboard-heading h1{font-size:25px}.kudo-dashboard-v2 .live-dashboard-heading p{font-size:11px}.kudo-dashboard-v2 .dashboard-month-picker{align-self:flex-end}.kudo-dashboard-v2 .dashboard-month-picker input{width:116px;font-size:10px}.kudo-dashboard-v2 .kudo-hero{min-height:215px!important;padding:18px!important}.kudo-dashboard-v2 .kudo-hero-top{min-height:175px;gap:8px}.kudo-dashboard-v2 .kudo-hero-copy{max-width:60%;gap:8px}.kudo-dashboard-v2 .kudo-hero-copy strong{font-size:clamp(26px,7vw,36px)}.kudo-dashboard-v2 .kudo-hero-copy small{font-size:9px}.kudo-dashboard-v2 .dashboard-variation{padding:7px 9px;font-size:10px}.kudo-dashboard-v2 .dashboard-owl-frame{width:39%;min-width:0;border-radius:17px}.kudo-dashboard-v2 .kudo-month-summary{min-height:230px!important}.kudo-dashboard-v2 .kudo-category-card,.kudo-dashboard-v2 .kudo-recent-card{min-height:0!important;padding:19px!important}.kudo-dashboard-v2 .kudo-category-content{justify-content:space-around;gap:12px;margin-top:19px}.kudo-dashboard-v2 .kudo-donut{width:clamp(125px,38vw,160px);height:clamp(125px,38vw,160px)}.kudo-dashboard-v2 .kudo-category-legend{min-width:120px;gap:12px}.kudo-dashboard-v2 .kudo-category-legend>div{gap:7px;font-size:10px}.kudo-dashboard-v2 .kudo-category-legend b{font-size:10px}.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article{grid-template-columns:42px minmax(0,1fr) auto;min-height:65px;gap:9px}.kudo-dashboard-v2 .kudo-recent-card .live-type-icon{width:39px;height:39px;border-radius:12px}.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article>div b{font-size:11px}.kudo-dashboard-v2 .kudo-recent-card .live-recent-list article>strong{font-size:10px}}
+@media(max-width:390px){.kudo-dashboard-v2 .live-dashboard-heading{flex-direction:column}.kudo-dashboard-v2 .dashboard-month-picker{align-self:flex-start}.kudo-dashboard-v2 .kudo-category-content{gap:8px}.kudo-dashboard-v2 .kudo-donut{width:118px;height:118px}.kudo-dashboard-v2 .kudo-category-legend{min-width:110px}}
+@media(prefers-reduced-motion:reduce){.dashboard-shell .nav-link{transition:none}}
+
+.kudo-dashboard-v2 .kudo-mascot{display:block;max-width:100%;height:auto;object-fit:contain;animation:kudo-dashboard-mascot-appear .45s ease-out both,kudo-dashboard-mascot-float 5s ease-in-out .45s infinite}
+@keyframes kudo-dashboard-mascot-appear{from{opacity:0}to{opacity:1}}
+@keyframes kudo-dashboard-mascot-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce){.kudo-dashboard-v2 .kudo-mascot{animation:none}}
+
+
+/* Evita que el selector del mes compita con las acciones fijas del encabezado en móvil. */
+@media (max-width: 700px) {
+  .dashboard-shell .dashboard-content { padding-top: 78px; }
+  .kudo-dashboard-v2 .live-dashboard-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 13px;
+  }
+  .kudo-dashboard-v2 .dashboard-month-picker {
+    width: 100%;
+    min-height: 46px;
+    align-self: stretch;
+    justify-content: space-between;
+  }
+  .kudo-dashboard-v2 .dashboard-month-picker > label {
+    flex: 1;
+    justify-content: center;
+  }
+  .kudo-dashboard-v2 .dashboard-month-picker input {
+    width: 150px;
+    text-align: center;
+  }
+}

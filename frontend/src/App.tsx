@@ -79,7 +79,7 @@ function App(){
   return <Routes>
     <Route path="/login" element={<LoginPage onLogin={profile=>{setUser(profile);setLogged(true)}}/>}/>
     <Route path="/reset-password" element={<LoginPage onLogin={profile=>{setUser(profile);setLogged(true)}}/>}/>
-    <Route path="/*" element={logged?<div className={`shell ${menu?'menu-open':''}`}>
+    <Route path="/*" element={logged?<div className={`shell ${menu?'menu-open':''} ${location.pathname==='/'?'dashboard-shell':''}`}>
       <aside className={`sidebar ${menu?'open':''}`}>
         <div className="brand"><div className="brand-mark">k</div><span>KUDO<small>FINANZAS PERSONALES</small></span><button className="close-menu" onClick={()=>setMenu(false)}><X/></button></div>
         <div className="nav-label">MENÚ PRINCIPAL</div>
@@ -102,7 +102,7 @@ function App(){
           {headerMenu==='profile'&&<section className="header-popover profile-popover" id="profile-popover" role="menu" aria-label="Menú de perfil"><div className="profile-popover-user"><div className="avatar">{(user?.name||'A').charAt(0).toUpperCase()}</div><span><b>{user?.name||'Mi cuenta'}</b><small>{user?.email||'Cuenta personal'}</small></span></div><NavLink role="menuitem" to="/cuenta" onClick={()=>setHeaderMenu(null)}><Wallet size={17}/>Mi cuenta</NavLink><button role="menuitem" type="button" onClick={()=>{setHeaderMenu(null);localStorage.removeItem('kudo-token');localStorage.removeItem('kudo-user');localStorage.removeItem('kudo-currency');setUser(null);setLogged(false)}}><LogOut size={17}/>Cerrar sesión</button></section>}
         </div>
       </div></header>
-        <div className="content"><Routes>
+        <div className={`content ${location.pathname==='/'?'dashboard-content':''}`}><Routes>
           <Route path="/" element={<DashboardPage transactions={tx} goals={goals} name={user?.name||'ahí'} currencyCode={user?.currency||currencyCode()}/>}/>
           <Route path="/finanzas" element={<FinancePage transactions={tx} currencyCode={user?.currency||currencyCode()}/>}/>
           <Route path="/transaccion" element={<NewTransaction addTx={addTx}/>}/>
