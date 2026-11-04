@@ -25,4 +25,9 @@ El recorrido verificó:
 
 El test usa una sola cuenta y datos sintéticos dentro de la base temporal. Se generaron capturas reales en `capturas/` y un reporte HTML en `playwright-report/index.html`. Los intentos iniciales detectaron selectores ambiguos; se corrigió el test y la ejecución final aprobó.
 
-El recorrido no cubre Kudo AI. Las dos primeras ejecuciones de CI pasaron instalación, migraciones, compilación y `npm test`, pero detectaron diferencias reales entre el marcado de autenticación y de la barra de presupuesto de la rama remota y los selectores originales. El test ahora abre `/login` explícitamente tras cerrar sesión y verifica el progreso del límite mediante los atributos accesibles si existen o mediante el ancho real de la barra (`25%`) en el marcado actual. La nueva ejecución remota aún está pendiente.
+El recorrido no cubre Kudo AI. En las primeras ejecuciones de CI, Playwright identificó diferencias entre el marcado remoto de autenticación y de la barra de presupuesto; se ajustó el flujo para abrir `/login` explícitamente y verificar el valor visible de progreso aunque la barra no declare rol ARIA. Después de los ajustes, GitHub Actions pasó en ambos eventos:
+
+- **Push:** [ejecución 41737060187](https://github.com/4paula0r/kudo-app/actions/runs/41737060187) — exitosa.
+- **Pull request:** [ejecución 41737053130](https://github.com/4paula0r/kudo-app/actions/runs/41737053130) — exitosa.
+
+En ambas se completaron instalación, migraciones, compilación, `npm test`, instalación de Chromium, E2E y carga del artefacto. GitHub guardó el reporte y capturas de cada ejecución como artefacto `kudo-evidencias-<número de ejecución>`.
