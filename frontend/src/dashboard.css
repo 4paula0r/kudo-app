@@ -102,3 +102,29 @@
 @keyframes kudo-dashboard-mascot-appear{from{opacity:0}to{opacity:1}}
 @keyframes kudo-dashboard-mascot-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @media(prefers-reduced-motion:reduce){.kudo-dashboard-v2 .kudo-mascot{animation:none}}
+
+
+/* Evita que el selector del mes compita con las acciones fijas del encabezado en móvil. */
+@media (max-width: 700px) {
+  .dashboard-shell .dashboard-content { padding-top: 78px; }
+  .kudo-dashboard-v2 .live-dashboard-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 13px;
+  }
+  .kudo-dashboard-v2 .dashboard-month-picker {
+    width: 100%;
+    min-height: 46px;
+    align-self: stretch;
+    justify-content: space-between;
+  }
+  .kudo-dashboard-v2 .dashboard-month-picker > label {
+    flex: 1;
+    justify-content: center;
+  }
+  .kudo-dashboard-v2 .dashboard-month-picker input {
+    width: 150px;
+    text-align: center;
+  }
+}
